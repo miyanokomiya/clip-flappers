@@ -10,6 +10,7 @@ import {
   getRate,
   useDrag,
   useWindowPointerEffect,
+  clipImage,
 } from 'okanvas'
 
 const SVG_URL = 'http://www.w3.org/2000/svg'
@@ -145,12 +146,14 @@ function getPedal(p: Vector, base: Vector, vec: Vector): Vector {
 
 interface ErrorMessages {
   invalidImageFile: string
+  failedToClipImage: string
 }
 
 interface Props {
   viewSize?: Size
   clipSize?: Size
   errorMessages?: ErrorMessages
+  onEachClip?: (base64: string) => void
 }
 
 export default class ClipFlappers {
@@ -162,15 +165,17 @@ export default class ClipFlappers {
   private errorMessage = ''
   private errorMessages: ErrorMessages = {
     invalidImageFile: 'Invalid image file.',
+    failedToClipImage: 'Failed to clip a image',
   }
 
   private viewSize: Size = { width: 124, height: 124 }
   private clipSize: Size = { width: 124, height: 124 }
-  private disposeWindowPointerEffect: () => void = () => {}
+  private disposeWindowPointer: () => void = () => {}
   private dragMode: '' | 'move' | 'resize' = ''
   private clipRect: Rectangle | null = null
   private clipRectOrg: Rectangle | null = null
   private dragListeners: PointerListeners | null = null
+  private onEachClip: ((base64: string) => void) | null = null
 
   constructor(el: string | Element, props?: Props) {
     if (el instanceof Element) {
@@ -186,8 +191,26 @@ export default class ClipFlappers {
     if (props?.errorMessages) this.errorMessages = props.errorMessages
     if (props?.viewSize) this.viewSize = props.viewSize
     if (props?.clipSize) this.clipSize = props.clipSize
+    if (props?.onEachClip) this.onEachClip = props.onEachClip
 
     this.render()
+  }
+
+  dispose() {
+    if (this.$el?.parentElement) {
+      this.$el.parentElement.removeChild(this.$el)
+    }
+    this.$el = null as any
+    this.$svg = null as any
+    this.$clipRect = null as any
+    this.image = null
+    this.disposeWindowPointer()
+    this.dragListeners = null
+  }
+
+  async clip(): Promise<string> {
+    if (!this.image || !this.clipRect) throw new Error('image not loaded')
+    return clipImage(this.image, this.clipRect, this.clipSize)
   }
 
   private render() {
@@ -196,7 +219,7 @@ export default class ClipFlappers {
     const $fileInput = createHTMLElement('input', {
       type: 'file',
       accept: 'image/*',
-      oninput: (e) => this.onInputFile(e),
+      oninput: (e: any) => this.onInputFile(e),
     })
 
     const $button = createHTMLElement(
@@ -262,13 +285,12 @@ export default class ClipFlappers {
 
     const dragListeners = useDrag((args) => this.onDrag(args, scale))
     this.dragListeners = dragListeners
-    this.disposeWindowPointerEffect = useWindowPointerEffect({
+    if (this.disposeWindowPointer) {
+      this.disposeWindowPointer()
+    }
+    this.disposeWindowPointer = useWindowPointerEffect({
       onMove: dragListeners.onMove,
-      onUp: () => {
-        dragListeners.onUp()
-        this.dragMode = ''
-        this.clipRectOrg = null
-      },
+      onUp: this.onUp,
     })
 
     const clipRect = { ...viewBoxRect }
@@ -283,6 +305,16 @@ export default class ClipFlappers {
     appendChild($fragment, $image)
     appendChild($fragment, $clipRect)
     appendChild($svg, $fragment)
+  }
+
+  private onUp = () => {
+    if (!this.dragListeners) return
+    this.dragListeners.onUp()
+    if (this.clipRectOrg) {
+      this.onCompleteClip()
+    }
+    this.dragMode = ''
+    this.clipRectOrg = null
   }
 
   private onStartMove = (e: any) => {
@@ -319,6 +351,22 @@ export default class ClipFlappers {
     this.$svg.appendChild($clipRect)
     this.clipRect = rect
     this.$clipRect = $clipRect
+  }
+
+  private async onCompleteClip() {
+    if (!this.image) return
+    if (!this.clipRect) return
+
+    if (this.onEachClip) {
+      let clipped
+      try {
+        clipped = await clipImage(this.image, this.clipRect, this.clipSize)
+      } catch (e) {
+        this.errorMessage = this.errorMessages.failedToClipImage
+        return
+      }
+      this.onEachClip(clipped)
+    }
   }
 
   private onDrag(dragState: DragArgs, scale: number) {
@@ -364,17 +412,5 @@ export default class ClipFlappers {
     } catch (e) {
       this.errorMessage = this.errorMessages.invalidImageFile
     }
-  }
-
-  dispose() {
-    if (this.$el?.parentElement) {
-      this.$el.parentElement.removeChild(this.$el)
-    }
-    this.$el = null as any
-    this.$svg = null as any
-    this.$clipRect = null as any
-    this.image = null
-    this.disposeWindowPointerEffect()
-    this.dragListeners = null
   }
 }
