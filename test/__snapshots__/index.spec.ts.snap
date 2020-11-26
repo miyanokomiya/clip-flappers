@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index snapshot default 1`] = `
+<div>
+  <div>
+    <input
+      accept="image/*"
+      type="file"
+    />
+    <button>
+      Select
+    </button>
+    <div
+      style="padding:8px;border:1px solid #000;backgroundColor:#ccc;overflow:hidden;width:124px;height:124px;"
+    >
+      <svg
+        style="overflow:visible;width:100%;height:100%;"
+        viewBox="0 0 100 100"
+        xmlns="http://www.w3.org/2000/svg"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`index snapshot image loaded 1`] = `
+<div>
+  <div>
+    <input
+      accept="image/*"
+      type="file"
+    />
+    <button>
+      Select
+    </button>
+    <div
+      style="padding:8px;border:1px solid #000;backgroundColor:#ccc;overflow:hidden;width:124px;height:124px;"
+    >
+      <svg
+        style="overflow:visible;width:100%;height:100%;"
+        viewBox="0 -50 200 200"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <image
+          height="100"
+          href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkBAMAAAAxqGI4AAAAG1BMVEUAAAD///8/Pz+/v7/f399/f3+fn58fHx9fX18kPjWPAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABi0lEQVRoge2UMU/DMBCFjySNM8LA7tJIrBWtEGMJlGbsgMQKUtlDWzFbIj+cs88hoaVSYzq+T4ot6z35xbmLiQAAAAAAAAAAAACO4krbUV25xVofcK27rr5E08n9kqfHyZxX+cN0uet40z+Cd/Um1aSeeBNNm1eKClK3O4bNikO8IK4whhWVPJWUGHJPBzVPNDWCuMJIdDbj6YtqHrPxLy03NkQE7wojNqmtxAe986jOeRjwxvRptReyISJ4VxhnVWx4Sqo7u1qQqwEp/2FsiAjeFRZSu40o1oVd3diBS7w1bYgI3hUWUsrrxcYeQt46WzQHcSEieFdQxmC8H0J13Wx2mpC62v9cNLhs5JN8rmjhX69TeKLtqinwSQrPNabdFubWyopOyH9bOHMtOyP7m+XU/IzcWrVuQ0TwrgCe3fFtKxWUGNnT/SNR0YZ4QVz9SaUEuXEXZOkvyJQ3pVEb4gVx9Wd4wSztjW8v8dEfV707mgjeFYy6dtP6UO+I4F0AAAAAAAAAAAAAR/ENV6VF0qC6xGQAAAAASUVORK5CYII="
+          width="200"
+          x="0"
+          y="0"
+        />
+        <g
+          transform="translate(0, -50)"
+        >
+          <rect
+            fill="none"
+            height="200"
+            stroke="red"
+            stroke-width="6.451612903225806"
+            width="200"
+            x="0"
+            y="0"
+          />
+          <g>
+            <circle
+              cx="0"
+              cy="0"
+              fill="red"
+              r="12.903225806451612"
+              stroke="none"
+            />
+          </g>
+          <g
+            transform="translate(200, 200)"
+          >
+            <circle
+              cx="0"
+              cy="0"
+              fill="red"
+              r="12.903225806451612"
+              stroke="none"
+            />
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+`;
