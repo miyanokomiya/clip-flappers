@@ -15,7 +15,10 @@ import {
 const SVG_URL = 'http://www.w3.org/2000/svg'
 
 const g = (el: string) => document.getElementById(el)
-const appendChild = ($el: Element, $child: Element) => $el.appendChild($child)
+const appendChild = (
+  $el: Element | DocumentFragment,
+  $child: Element | DocumentFragment
+) => $el.appendChild($child)
 const setAttribute = ($el: Element, name: string, value: string) =>
   $el.setAttribute(name, value)
 
@@ -46,9 +49,11 @@ function createElement<T extends Element>(
     setAttribute($el, key, attributes[key].toString())
   }
   if (Array.isArray(children)) {
+    const $fragment = document.createDocumentFragment()
     for (let i = 0; i < children.length; i++) {
-      $el.appendChild(children[i])
+      $fragment.appendChild(children[i])
     }
+    $el.appendChild($fragment)
   } else {
     $el.textContent = children
   }
@@ -212,9 +217,11 @@ export default class ClipFlappers {
     this.$svg = $svg
 
     appendChild($svgWrapper, $svg)
-    appendChild($root, $fileInput)
-    appendChild($root, $button)
-    appendChild($root, $svgWrapper)
+    const $fragment = document.createDocumentFragment()
+    appendChild($fragment, $fileInput)
+    appendChild($fragment, $button)
+    appendChild($fragment, $svgWrapper)
+    appendChild($root, $fragment)
     appendChild(this.$el, $root)
   }
 
@@ -237,7 +244,6 @@ export default class ClipFlappers {
       'viewBox',
       `${viewBoxRect.x} ${viewBoxRect.y} ${viewBoxRect.width} ${viewBoxRect.height}`
     )
-    appendChild($svg, $image)
 
     const scale = getRate(
       this.viewSize,
@@ -262,7 +268,11 @@ export default class ClipFlappers {
       onStartResize: this.onStartResize,
     })
     this.$clipRect = $clipRect
-    appendChild($svg, $clipRect)
+
+    const $fragment = document.createDocumentFragment()
+    appendChild($fragment, $image)
+    appendChild($fragment, $clipRect)
+    appendChild($svg, $fragment)
   }
 
   private onStartMove = (e: any) => {
