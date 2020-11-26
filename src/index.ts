@@ -22,9 +22,11 @@ const appendChild = (
 const setAttribute = ($el: Element, name: string, value: string) =>
   $el.setAttribute(name, value)
 
+type Attributes = { [key: string]: string | number | Function } | null
+
 function createHTMLElement(
   tag: string,
-  attributes: { [key: string]: string | number } | null = null,
+  attributes: Attributes = null,
   children: Element[] | string = []
 ): HTMLElement {
   const $el = document.createElement(tag)
@@ -33,7 +35,7 @@ function createHTMLElement(
 
 function createSVGElement(
   tag: string,
-  attributes: { [key: string]: string | number } | null = null,
+  attributes: Attributes = null,
   children: Element[] | string = []
 ): SVGElement {
   const $el = document.createElementNS(SVG_URL, tag)
@@ -42,11 +44,16 @@ function createSVGElement(
 
 function createElement<T extends Element>(
   $el: T,
-  attributes: { [key: string]: string | number } | null = null,
+  attributes: Attributes = null,
   children: Element[] | string = []
 ): T {
   for (const key in attributes) {
-    setAttribute($el, key, attributes[key].toString())
+    const attr = attributes[key]
+    if (typeof attr === 'function') {
+      ;($el as any)[key] = attr
+    } else {
+      setAttribute($el, key, attributes[key].toString())
+    }
   }
   if (Array.isArray(children)) {
     const $fragment = document.createDocumentFragment()
@@ -84,10 +91,10 @@ function createClipRectElm(
       r: 8 * scale,
       fill: 'red',
       stroke: 'none',
+      onmousedown: listeners.onStartMove,
+      ontouchstart: listeners.onStartMove,
     }),
   ])
-  $moveG.onmousedown = listeners.onStartMove
-  $moveG.ontouchstart = listeners.onStartMove
   const $resizeG = createSVGElement(
     'g',
     {
@@ -100,11 +107,11 @@ function createClipRectElm(
         r: 8 * scale,
         fill: 'red',
         stroke: 'none',
+        onmousedown: listeners.onStartResize,
+        ontouchstart: listeners.onStartResize,
       }),
     ]
   )
-  $resizeG.onmousedown = listeners.onStartResize
-  $resizeG.ontouchstart = listeners.onStartResize
   const $g = createSVGElement(
     'g',
     {
@@ -189,11 +196,14 @@ export default class ClipFlappers {
     const $fileInput = createHTMLElement('input', {
       type: 'file',
       accept: 'image/*',
+      oninput: (e) => this.onInputFile(e),
     })
-    $fileInput.oninput = (e) => this.onInputFile(e)
 
-    const $button = createHTMLElement('button', null, 'Select')
-    $button.onclick = () => $fileInput.click()
+    const $button = createHTMLElement(
+      'button',
+      { onclick: () => $fileInput.click() },
+      'Select'
+    )
 
     const $svgWrapper = createHTMLElement('div')
     setStyles($svgWrapper, {
