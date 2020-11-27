@@ -1,17 +1,22 @@
 import {
-  Rectangle,
-  Size,
+  Rectangle as _Rectangle,
+  Size as _Size,
   Vector,
   DragArgs,
   PointerListeners,
   fileToBase64,
-  base64ToImage,
+  base64ToImage as _base64ToImage,
   getCentralizedViewBox,
   getRate,
   useDrag,
   useWindowPointerEffect,
-  clipImage,
+  clipImage as _clipImage,
 } from 'okanvas'
+
+export type Rectangle = _Rectangle
+export type Size = _Size
+export const clipImage = _clipImage
+export const base64ToImage = _base64ToImage
 
 const SVG_URL = 'http://www.w3.org/2000/svg'
 
@@ -153,7 +158,7 @@ interface Props {
   viewSize?: Size
   clipSize?: Size
   errorMessages?: ErrorMessages
-  onEachClip?: (base64: string) => void
+  onUpdateClip?: (base64: string, clipRect: Rectangle, size: Size) => void
 }
 
 export default class ClipFlappers {
@@ -175,7 +180,9 @@ export default class ClipFlappers {
   private clipRect: Rectangle | null = null
   private clipRectOrg: Rectangle | null = null
   private dragListeners: PointerListeners | null = null
-  private onEachClip: ((base64: string) => void) | null = null
+  private onUpdateClip:
+    | ((base64: string, clipRect: Rectangle, size: Size) => void)
+    | null = null
 
   constructor(el: string | Element, props?: Props) {
     if (el instanceof Element) {
@@ -191,7 +198,7 @@ export default class ClipFlappers {
     if (props?.errorMessages) this.errorMessages = props.errorMessages
     if (props?.viewSize) this.viewSize = props.viewSize
     if (props?.clipSize) this.clipSize = props.clipSize
-    if (props?.onEachClip) this.onEachClip = props.onEachClip
+    if (props?.onUpdateClip) this.onUpdateClip = props.onUpdateClip
 
     this.render()
   }
@@ -357,15 +364,8 @@ export default class ClipFlappers {
     if (!this.image) return
     if (!this.clipRect) return
 
-    if (this.onEachClip) {
-      let clipped
-      try {
-        clipped = await clipImage(this.image, this.clipRect, this.clipSize)
-      } catch (e) {
-        this.errorMessage = this.errorMessages.failedToClipImage
-        return
-      }
-      this.onEachClip(clipped)
+    if (this.onUpdateClip) {
+      this.onUpdateClip(this.base64, this.clipRect, this.clipSize)
     }
   }
 

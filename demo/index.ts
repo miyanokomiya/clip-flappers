@@ -1,6 +1,6 @@
-import ClipFlappers from '../src/index'
+import ClipFlappers, { Rectangle, Size, clipImage } from '../src/index'
 
-function addImage(base64: string) {
+async function addImage(base64: string) {
   const $image = new Image()
   $image.onload = () => {
     $image.style.border = 'solid 1px black'
@@ -10,12 +10,17 @@ function addImage(base64: string) {
   $image.src = base64
 }
 
+async function onUpdateClip(base64: string, clipRect: Rectangle, size: Size) {
+  const clipped = await clipImage(base64, clipRect, size)
+  addImage(clipped)
+}
+
 const clipFlappers = new ClipFlappers('target', {
   viewSize: {
     width: 300,
     height: 200,
   },
-  onEachClip: addImage,
+  onUpdateClip: onUpdateClip,
 })
 
 document.getElementById('dispose')?.addEventListener('click', () => {
