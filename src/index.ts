@@ -13,141 +13,21 @@ import {
   clipImage as _clipImage,
 } from 'okanvas'
 
+import {
+  g,
+  appendChild,
+  appendChildren,
+  createSVGElement,
+  setStyles,
+  setAttribute,
+  createHTMLElement,
+  createClipRectElm,
+} from './el'
+
 export type Rectangle = _Rectangle
 export type Size = _Size
 export const clipImage = _clipImage
 export const base64ToImage = _base64ToImage
-
-const SVG_URL = 'http://www.w3.org/2000/svg'
-
-const g = (el: string) => document.getElementById(el)
-const appendChild = (
-  $el: Element | DocumentFragment,
-  $child: Element | DocumentFragment
-) => $el.appendChild($child)
-const setAttribute = ($el: Element, name: string, value: string) =>
-  $el.setAttribute(name, value)
-
-type Attributes = { [key: string]: string | number | Function } | null
-
-function createHTMLElement(
-  tag: string,
-  attributes: Attributes = null,
-  children: Element[] | string = []
-): HTMLElement {
-  const $el = document.createElement(tag)
-  return createElement($el, attributes, children)
-}
-
-function createSVGElement(
-  tag: string,
-  attributes: Attributes = null,
-  children: Element[] | string = []
-): SVGElement {
-  const $el = document.createElementNS(SVG_URL, tag)
-  return createElement($el, attributes, children)
-}
-
-function createElement<T extends Element>(
-  $el: T,
-  attributes: Attributes = null,
-  children: Element[] | string = []
-): T {
-  for (const key in attributes) {
-    const attr = attributes[key]
-    if (typeof attr === 'function') {
-      ;($el as any)[key] = attr
-    } else {
-      setAttribute($el, key, attributes[key].toString())
-    }
-  }
-  if (Array.isArray(children)) {
-    const $fragment = document.createDocumentFragment()
-    for (let i = 0; i < children.length; i++) {
-      $fragment.appendChild(children[i])
-    }
-    $el.appendChild($fragment)
-  } else {
-    $el.textContent = children
-  }
-  return $el
-}
-
-function setStyles(el: Element, styles: { [key: string]: string }) {
-  el.setAttribute(
-    'style',
-    Object.keys(styles)
-      .map((key) => `${key}:${styles[key]};`)
-      .join('')
-  )
-}
-
-function createClipRectElm(
-  clipRect: Rectangle,
-  scale: number,
-  listeners: {
-    onStartMove: (e: any) => void
-    onStartResize: (e: any) => void
-  }
-): SVGElement {
-  const $moveG = createSVGElement('g', null, [
-    createSVGElement('circle', {
-      cx: 0,
-      cy: 0,
-      r: 8 * scale,
-      fill: 'red',
-      stroke: 'none',
-      onmousedown: listeners.onStartMove,
-      ontouchstart: listeners.onStartMove,
-    }),
-  ])
-  const $resizeG = createSVGElement(
-    'g',
-    {
-      transform: `translate(${clipRect.width}, ${clipRect.height})`,
-    },
-    [
-      createSVGElement('circle', {
-        cx: 0,
-        cy: 0,
-        r: 8 * scale,
-        fill: 'red',
-        stroke: 'none',
-        onmousedown: listeners.onStartResize,
-        ontouchstart: listeners.onStartResize,
-      }),
-    ]
-  )
-  const $g = createSVGElement(
-    'g',
-    {
-      transform: `translate(${clipRect.x}, ${clipRect.y})`,
-    },
-    [
-      createSVGElement('rect', {
-        x: 0,
-        y: 0,
-        width: clipRect.width,
-        height: clipRect.height,
-        fill: 'none',
-        stroke: 'red',
-        'stroke-width': 4 * scale,
-      }),
-      $moveG,
-      $resizeG,
-    ]
-  )
-  return $g
-}
-
-function getPedal(p: Vector, base: Vector, vec: Vector): Vector {
-  const v1 = vec
-  const v2 = { x: p.x - base.x, y: p.y - base.y }
-  const dd = v1.x * v1.x + v1.y * v1.y
-  const dot = v1.x * v2.x + v1.y * v2.y
-  const t = dot / dd
-  return { x: v1.x * t, y: v1.y * t }
-}
 
 interface ErrorMessages {
   invalidImageFile: string
@@ -221,8 +101,6 @@ export default class ClipFlappers {
   }
 
   private render() {
-    const $root = createHTMLElement('div', null, [])
-
     const $fileInput = createHTMLElement('input', {
       type: 'file',
       accept: 'image/*',
@@ -235,47 +113,37 @@ export default class ClipFlappers {
       'Select'
     )
 
-    const $svgWrapper = createHTMLElement('div')
-    setStyles($svgWrapper, {
-      padding: '8px',
-      border: '1px solid #000',
-      backgroundColor: '#ccc',
-      overflow: 'hidden',
-      width: `${this.viewSize.width}px`,
-      height: `${this.viewSize.height}px`,
-    })
+    const $svgWrapper = _createSvgWrapperElm(this.viewSize)
+    $svgWrapper.ondragover = (e: DragEvent) => {
+      e.preventDefault()
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'copy'
+      }
+      $svgWrapper.style.opacity = '0.7'
+    }
+    $svgWrapper.ondragleave = (e: DragEvent) => {
+      e.preventDefault()
+      $svgWrapper.style.opacity = ''
+    }
+    $svgWrapper.ondrop = (e: DragEvent) => {
+      e.preventDefault()
+      $svgWrapper.style.opacity = ''
+      this.onInputFile(e)
+    }
+    this.$svg = _createSvg()
 
-    const $svg = createSVGElement('svg', {
-      xmlns: 'http://www.w3.org/2000/svg',
-      viewBox: '0 0 100 100',
-    })
-    setStyles($svg, {
-      overflow: 'visible',
-      width: '100%',
-      height: '100%',
-    })
-    this.$svg = $svg
-
-    appendChild($svgWrapper, $svg)
-    const $fragment = document.createDocumentFragment()
-    appendChild($fragment, $fileInput)
-    appendChild($fragment, $button)
-    appendChild($fragment, $svgWrapper)
-    appendChild($root, $fragment)
-    appendChild(this.$el, $root)
+    appendChildren(this.$el, [
+      appendChildren(createHTMLElement('div', null, []), [
+        $fileInput,
+        $button,
+        appendChildren($svgWrapper, [this.$svg]),
+      ]),
+    ])
   }
 
   private async updateImage() {
     const image = await base64ToImage(this.base64)
     this.image = image
-    const $image = createSVGElement('image', {
-      x: 0,
-      y: 0,
-      width: image.width,
-      height: image.height,
-      href: this.base64,
-    })
-
     const viewBoxRect = getCentralizedViewBox(this.clipSize, image)
     const $svg = this.$svg!
     $svg.innerHTML = ''
@@ -300,18 +168,22 @@ export default class ClipFlappers {
       onUp: this.onUp,
     })
 
-    const clipRect = { ...viewBoxRect }
-    this.clipRect = clipRect
-    const $clipRect = createClipRectElm(this.clipRect, scale, {
+    this.clipRect = { ...viewBoxRect }
+    this.$clipRect = createClipRectElm(this.clipRect, scale, {
       onStartMove: this.onStartMove,
       onStartResize: this.onStartResize,
     })
-    this.$clipRect = $clipRect
 
-    const $fragment = document.createDocumentFragment()
-    appendChild($fragment, $image)
-    appendChild($fragment, $clipRect)
-    appendChild($svg, $fragment)
+    appendChildren($svg, [
+      createSVGElement('image', {
+        x: 0,
+        y: 0,
+        width: image.width,
+        height: image.height,
+        href: this.base64,
+      }),
+      this.$clipRect,
+    ])
   }
 
   private onUp = () => {
@@ -355,7 +227,7 @@ export default class ClipFlappers {
       onStartResize: this.onStartResize,
     })
     this.$svg.removeChild(this.$clipRect)
-    this.$svg.appendChild($clipRect)
+    appendChild(this.$svg, $clipRect)
     this.clipRect = rect
     this.$clipRect = $clipRect
   }
@@ -388,7 +260,7 @@ export default class ClipFlappers {
         x: clipRectOrg.width + (dragState.p.x - dragState.base.x) * scale,
         y: clipRectOrg.height + (dragState.p.y - dragState.base.y) * scale,
       }
-      const afterDiagonal = getPedal(
+      const afterDiagonal = _getPedal(
         beforeDiagonal,
         { x: 0, y: 0 },
         {
@@ -405,12 +277,48 @@ export default class ClipFlappers {
   }
 
   private async onInputFile(event: any) {
+    const files = event?.target?.files ?? event.dataTransfer?.files
+    if (!files) return
     try {
-      if (!event?.target?.files) return
-      this.base64 = await fileToBase64(event.target.files[0])
+      this.base64 = await fileToBase64(files[0])
       this.updateImage()
     } catch (e) {
       this.errorMessage = this.errorMessages.invalidImageFile
     }
   }
+}
+
+function _createSvgWrapperElm(viewSize: Size): HTMLElement {
+  const $svgWrapper = createHTMLElement('div')
+  setStyles($svgWrapper, {
+    padding: '8px',
+    border: '1px solid #000',
+    backgroundColor: '#ccc',
+    overflow: 'hidden',
+    width: `${viewSize.width}px`,
+    height: `${viewSize.height}px`,
+  })
+  return $svgWrapper
+}
+
+function _createSvg(): SVGElement {
+  const $svg = createSVGElement('svg', {
+    xmlns: 'http://www.w3.org/2000/svg',
+    viewBox: '0 0 100 100',
+  })
+  setStyles($svg, {
+    overflow: 'visible',
+    width: '100%',
+    height: '100%',
+  })
+  return $svg
+}
+
+function _getPedal(p: Vector, base: Vector, vec: Vector): Vector {
+  const v1 = vec
+  const v2 = { x: p.x - base.x, y: p.y - base.y }
+  const dd = v1.x * v1.x + v1.y * v1.y
+  const dot = v1.x * v2.x + v1.y * v2.y
+  const t = dot / dd
+  return { x: v1.x * t, y: v1.y * t }
 }
