@@ -94,9 +94,7 @@ export default class ClipFlappers {
   }
 
   dispose() {
-    if (this.$el?.parentElement) {
-      this.$el.parentElement.removeChild(this.$el)
-    }
+    this.$el.innerHTML = ''
     this.$el = null as any
     this.$svg = null
     this.$clipRect = null
