@@ -36,9 +36,8 @@ export type Size = _Size
 export const clipImage = _clipImage
 export const base64ToImage = _base64ToImage
 
-interface ErrorMessages {
+export interface ErrorMessages {
   invalidImageFile: string
-  failedToClipImage: string
 }
 
 interface Props {
@@ -49,7 +48,7 @@ interface Props {
 }
 
 const EL_PREFIX = 'clip-f'
-type EL_KEYS = 'drop-button' | 'delete-button'
+type EL_KEYS = 'error' | 'drop-button' | 'delete-button'
 
 export class ClipFlappers {
   private $el: Element
@@ -57,11 +56,11 @@ export class ClipFlappers {
   private $clipRect: SVGElement | null = null
   private base64 = ''
   private image: HTMLImageElement | null = null
-  private errorMessage = ''
   private errorMessages: ErrorMessages = {
     invalidImageFile: 'Invalid image file.',
-    failedToClipImage: 'Failed to clip a image',
   }
+
+  private errorTimer = 0
 
   private viewSize: Size = { width: 124, height: 124 }
   private clipSize: Size = { width: 124, height: 124 }
@@ -166,6 +165,26 @@ export class ClipFlappers {
     })
     hide($deleteButton)
 
+    const $errorMessage = createHTMLElement('p', {
+      ..._getDataKey('error'),
+      onclick: () => this.hideError(),
+    })
+    setStyles($errorMessage, {
+      ...getResetStyles(),
+      position: 'absolute',
+      bottom: '0',
+      left: '0',
+      right: '0',
+      padding: '4px 8px',
+      color: 'white',
+      'background-color': 'red',
+      'font-size': '16px',
+      'word-break': 'break-all',
+      cursor: 'pointer',
+      transition: '0.5s all',
+      transform: 'translateY(100%)',
+    })
+
     const $svgWrapper = createSvgWrapperElm(this.viewSize)
     $svgWrapper.ondragover = (e: DragEvent) => {
       e.preventDefault()
@@ -189,13 +208,26 @@ export class ClipFlappers {
     appendChildren(this.$el, [
       appendChildren(createHTMLElement('div', null, []), [
         $fileInput,
-        appendChildren($svgWrapper, [this.$svg, $dropButton, $deleteButton]),
+        appendChildren($svgWrapper, [
+          this.$svg,
+          $dropButton,
+          $deleteButton,
+          $errorMessage,
+        ]),
       ]),
     ])
   }
 
-  private async updateImage() {
-    const image = await base64ToImage(this.base64)
+  private async updateImage(base64: string) {
+    let image = null
+    try {
+      image = await base64ToImage(base64)
+    } catch (e) {
+      this.setErrorMessage('invalidImageFile')
+    }
+    if (!image) return
+
+    this.base64 = base64
     this.image = image
     const viewBoxRect = getCentralizedViewBox(this.clipSize, image)
     const $svg = this.$svg!
@@ -334,10 +366,29 @@ export class ClipFlappers {
     const files = event?.target?.files ?? event.dataTransfer?.files
     if (!files) return
     try {
-      this.base64 = await fileToBase64(files[0])
-      this.updateImage()
+      const base64 = await fileToBase64(files[0])
+      this.updateImage(base64)
     } catch (e) {
-      this.errorMessage = this.errorMessages.invalidImageFile
+      this.setErrorMessage('invalidImageFile')
+    }
+  }
+
+  private setErrorMessage(message: keyof ErrorMessages) {
+    const $errorEl = this.getElement('error')
+    if ($errorEl) {
+      $errorEl.textContent = this.errorMessages[message]
+      $errorEl.style.transform = ''
+      clearTimeout(this.errorTimer as any)
+      this.errorTimer = setTimeout(() => this.hideError(), 5000) as any
+    }
+  }
+
+  private hideError() {
+    const $errorEl = this.getElement('error')
+    if ($errorEl) {
+      $errorEl.style.transform = 'translateY(100%)'
+      clearTimeout(this.errorTimer as any)
+      this.errorTimer = 0
     }
   }
 }
