@@ -1,4 +1,4 @@
-import { Rectangle } from 'okanvas'
+import { Size, Rectangle } from 'okanvas'
 
 const SVG_URL = 'http://www.w3.org/2000/svg'
 
@@ -66,12 +66,14 @@ export function createElement<T extends Element>(
 }
 
 export function setStyles(el: Element, styles: { [key: string]: string }) {
-  el.setAttribute(
-    'style',
-    Object.keys(styles)
-      .map((key) => `${key}:${styles[key]};`)
-      .join('')
-  )
+  if (el) {
+    el.setAttribute(
+      'style',
+      Object.keys(styles)
+        .map((key) => `${key}:${styles[key]};`)
+        .join('')
+    )
+  }
 }
 
 export function createClipRectElm(
@@ -130,4 +132,52 @@ export function createClipRectElm(
     ]
   )
   return $g
+}
+
+export function createSvgWrapperElm(viewSize: Size): HTMLElement {
+  const $svgWrapper = createHTMLElement('div')
+  setStyles($svgWrapper, {
+    padding: '8px',
+    border: '1px solid #000',
+    backgroundColor: '#ccc',
+    overflow: 'hidden',
+    width: `${viewSize.width}px`,
+    height: `${viewSize.height}px`,
+  })
+  return $svgWrapper
+}
+
+export function createSvg(): SVGElement {
+  const $svg = createSVGElement('svg', {
+    xmlns: 'http://www.w3.org/2000/svg',
+    viewBox: '0 0 100 100',
+  })
+  setStyles($svg, {
+    overflow: 'visible',
+    width: '100%',
+    height: '100%',
+  })
+  return $svg
+}
+
+export function createPhotoSVG(): SVGElement {
+  return appendChildren(createSvg(), [
+    createSVGElement('g', { transform: 'translate(25,25)' }, [
+      createSVGElement('g', { fill: '#aaa' }, [
+        createSVGElement('path', {
+          d: 'M0,45 L0,40 L15,25 L20,30 L30,20 L50,40 L50,45z',
+        }),
+        createSVGElement('circle', { cx: '10', cy: '15', r: '4' }),
+      ]),
+      createSVGElement('rect', {
+        width: '50',
+        height: '50',
+        rx: '4',
+        ry: '4',
+        fill: 'none',
+        stroke: '#aaa',
+        'stroke-width': '2',
+      }),
+    ]),
+  ])
 }

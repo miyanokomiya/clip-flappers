@@ -22,6 +22,9 @@ import {
   setAttribute,
   createHTMLElement,
   createClipRectElm,
+  createSvgWrapperElm,
+  createSvg,
+  createPhotoSVG,
 } from './el'
 
 export type Rectangle = _Rectangle
@@ -40,6 +43,9 @@ interface Props {
   errorMessages?: ErrorMessages
   onUpdateClip?: (base64: string, clipRect: Rectangle, size: Size) => void
 }
+
+const EL_PREFIX = 'clip-f'
+type EL_KEYS = 'drop-button'
 
 export default class ClipFlappers {
   private $el: Element
@@ -100,20 +106,29 @@ export default class ClipFlappers {
     return clipImage(this.image, this.clipRect, this.clipSize)
   }
 
+  private getElement(key: EL_KEYS): HTMLElement | SVGElement | null {
+    return this.$el.querySelector(`[data-key="${EL_PREFIX}_${key}"]`)
+  }
+
   private render() {
     const $fileInput = createHTMLElement('input', {
       type: 'file',
       accept: 'image/*',
       oninput: (e: any) => this.onInputFile(e),
     })
+    setStyles($fileInput, { display: 'none' })
 
     const $button = createHTMLElement(
       'button',
-      { onclick: () => $fileInput.click() },
-      'Select'
+      {
+        onclick: () => $fileInput.click(),
+        style: 'width:100%;height:100%;',
+        ..._getDataKey('drop-button'),
+      },
+      [createPhotoSVG()]
     )
 
-    const $svgWrapper = _createSvgWrapperElm(this.viewSize)
+    const $svgWrapper = createSvgWrapperElm(this.viewSize)
     $svgWrapper.ondragover = (e: DragEvent) => {
       e.preventDefault()
       if (e.dataTransfer) {
@@ -130,13 +145,13 @@ export default class ClipFlappers {
       $svgWrapper.style.opacity = ''
       this.onInputFile(e)
     }
-    this.$svg = _createSvg()
+    this.$svg = createSvg()
+    this.$svg.style.display = 'none'
 
     appendChildren(this.$el, [
       appendChildren(createHTMLElement('div', null, []), [
         $fileInput,
-        $button,
-        appendChildren($svgWrapper, [this.$svg]),
+        appendChildren($svgWrapper, [$button, this.$svg]),
       ]),
     ])
   }
@@ -147,11 +162,13 @@ export default class ClipFlappers {
     const viewBoxRect = getCentralizedViewBox(this.clipSize, image)
     const $svg = this.$svg!
     $svg.innerHTML = ''
+    $svg.style.display = ''
     setAttribute(
       $svg,
       'viewBox',
       `${viewBoxRect.x} ${viewBoxRect.y} ${viewBoxRect.width} ${viewBoxRect.height}`
     )
+    this.getElement('drop-button')!.style.display = 'none'
 
     const scale = getRate(
       this.viewSize,
@@ -288,32 +305,6 @@ export default class ClipFlappers {
   }
 }
 
-function _createSvgWrapperElm(viewSize: Size): HTMLElement {
-  const $svgWrapper = createHTMLElement('div')
-  setStyles($svgWrapper, {
-    padding: '8px',
-    border: '1px solid #000',
-    backgroundColor: '#ccc',
-    overflow: 'hidden',
-    width: `${viewSize.width}px`,
-    height: `${viewSize.height}px`,
-  })
-  return $svgWrapper
-}
-
-function _createSvg(): SVGElement {
-  const $svg = createSVGElement('svg', {
-    xmlns: 'http://www.w3.org/2000/svg',
-    viewBox: '0 0 100 100',
-  })
-  setStyles($svg, {
-    overflow: 'visible',
-    width: '100%',
-    height: '100%',
-  })
-  return $svg
-}
-
 function _getPedal(p: Vector, base: Vector, vec: Vector): Vector {
   const v1 = vec
   const v2 = { x: p.x - base.x, y: p.y - base.y }
@@ -321,4 +312,10 @@ function _getPedal(p: Vector, base: Vector, vec: Vector): Vector {
   const dot = v1.x * v2.x + v1.y * v2.y
   const t = dot / dd
   return { x: v1.x * t, y: v1.y * t }
+}
+
+function _getDataKey(key: EL_KEYS): { 'data-key': string } {
+  return {
+    'data-key': `${EL_PREFIX}_${key}`,
+  }
 }
