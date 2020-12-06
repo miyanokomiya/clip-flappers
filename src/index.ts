@@ -299,6 +299,7 @@ export class ClipFlappers {
   }
 
   private updateClipRect(rect: Rectangle) {
+    if (_isSameRect(this.clipRect, rect)) return
     if (!this.$svg) return
     if (!this.$clipRect) return
     if (!this.image) return
@@ -406,4 +407,15 @@ function _getDataKey(key: EL_KEYS): { 'data-key': string } {
   return {
     'data-key': `${EL_PREFIX}_${key}`,
   }
+}
+
+function _isSameRect(a: Rectangle | null, b: Rectangle | null): boolean {
+  return (
+    !!a &&
+    !!b &&
+    a.x === b.x &&
+    a.y === b.y &&
+    a.width === b.width &&
+    a.height === b.height
+  )
 }
