@@ -44,6 +44,4 @@ $ yarn build
 ```
 
 ## publish
-[TODO]
-
 Update `version` in `package.json`, commit with a comment `Release x.x.x` and merge into the `main` branch.
