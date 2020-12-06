@@ -9,7 +9,7 @@ exports[`index snapshot default 1`] = `
       type="file"
     />
     <div
-      style="padding:8px;border:1px solid #000;backgroundColor:#ccc;overflow:hidden;position:relative;width:124px;height:124px;"
+      style="padding:8px;border:3px solid #aaa;border-radius:8px;background-color:#f4f4f4;overflow:hidden;position:relative;width:124px;height:124px;"
     >
       <svg
         style="overflow: visible; width: 100%; height: 100%; display: none;"
@@ -28,6 +28,15 @@ exports[`index snapshot default 1`] = `
           <g
             transform="translate(25,25)"
           >
+            <rect
+              fill="none"
+              height="50"
+              rx="4"
+              ry="4"
+              stroke="#aaa"
+              stroke-width="2"
+              width="50"
+            />
             <g
               fill="#aaa"
             >
@@ -40,15 +49,6 @@ exports[`index snapshot default 1`] = `
                 r="4"
               />
             </g>
-            <rect
-              fill="none"
-              height="50"
-              rx="4"
-              ry="4"
-              stroke="#aaa"
-              stroke-width="2"
-              width="50"
-            />
           </g>
         </svg>
       </button>
@@ -62,12 +62,6 @@ exports[`index snapshot default 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <g>
-            <path
-              d="M24,24 L76,76 M24,76 L76,24"
-              fill="none"
-              stroke="#aaa"
-              stroke-width="12"
-            />
             <circle
               cx="50"
               cy="50"
@@ -75,6 +69,12 @@ exports[`index snapshot default 1`] = `
               r="50"
               stroke="#aaa"
               stroke-width="10"
+            />
+            <path
+              d="M24,24 L76,76 M24,76 L76,24"
+              fill="none"
+              stroke="#aaa"
+              stroke-width="12"
             />
           </g>
         </svg>
@@ -97,7 +97,7 @@ exports[`index snapshot image loaded 1`] = `
       type="file"
     />
     <div
-      style="padding:8px;border:1px solid #000;backgroundColor:#ccc;overflow:hidden;position:relative;width:124px;height:124px;"
+      style="padding:8px;border:3px solid #aaa;border-radius:8px;background-color:#f4f4f4;overflow:hidden;position:relative;width:124px;height:124px;"
     >
       <svg
         style="overflow: visible; width: 100%; height: 100%;"
@@ -157,6 +157,15 @@ exports[`index snapshot image loaded 1`] = `
           <g
             transform="translate(25,25)"
           >
+            <rect
+              fill="none"
+              height="50"
+              rx="4"
+              ry="4"
+              stroke="#aaa"
+              stroke-width="2"
+              width="50"
+            />
             <g
               fill="#aaa"
             >
@@ -169,15 +178,6 @@ exports[`index snapshot image loaded 1`] = `
                 r="4"
               />
             </g>
-            <rect
-              fill="none"
-              height="50"
-              rx="4"
-              ry="4"
-              stroke="#aaa"
-              stroke-width="2"
-              width="50"
-            />
           </g>
         </svg>
       </button>
@@ -191,12 +191,6 @@ exports[`index snapshot image loaded 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <g>
-            <path
-              d="M24,24 L76,76 M24,76 L76,24"
-              fill="none"
-              stroke="#aaa"
-              stroke-width="12"
-            />
             <circle
               cx="50"
               cy="50"
@@ -204,6 +198,12 @@ exports[`index snapshot image loaded 1`] = `
               r="50"
               stroke="#aaa"
               stroke-width="10"
+            />
+            <path
+              d="M24,24 L76,76 M24,76 L76,24"
+              fill="none"
+              stroke="#aaa"
+              stroke-width="12"
             />
           </g>
         </svg>

@@ -15,6 +15,7 @@ import { ClipFlappers, Rectangle, Size, clipImage } from 'clip-flappers'
 
 const clipFlappers = new ClipFlappers('target', {
   viewSize: { width: 300, height: 200 },
+  clipSize: { width: 100, height: 100 },
   onUpdateClip: async (base64: string, clipRect: Rectangle, size: Size) => {
     const clipped = await clipImage(base64, clipRect, size)
     console.log(clipped)
@@ -22,6 +23,17 @@ const clipFlappers = new ClipFlappers('target', {
 })
 
 // clipFlappers.dispose()
+```
+
+### customize error messages
+```ts
+import { ClipFlappers, ErrorMessages } from 'clip-flappers'
+
+new ClipFlappers('target', {
+  errorMessages: ErrorMessages = {
+    invalidImageFile: 'Invalid image file.',
+  }
+})
 ```
 
 ## commnad

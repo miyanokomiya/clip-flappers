@@ -147,8 +147,9 @@ export function createSvgWrapperElm(viewSize: Size): HTMLElement {
   const $svgWrapper = createHTMLElement('div')
   setStyles($svgWrapper, {
     padding: '8px',
-    border: '1px solid #000',
-    backgroundColor: '#ccc',
+    border: '3px solid #aaa',
+    'border-radius': '8px',
+    'background-color': '#f4f4f4',
     overflow: 'hidden',
     position: 'relative',
     width: `${viewSize.width}px`,
@@ -173,12 +174,6 @@ export function createSvg(): SVGElement {
 export function createPhotoSVG(): SVGElement {
   return appendChildren(createSvg(), [
     createSVGElement('g', { transform: 'translate(25,25)' }, [
-      createSVGElement('g', { fill: '#aaa' }, [
-        createSVGElement('path', {
-          d: 'M0,45 L0,40 L15,25 L20,30 L30,20 L50,40 L50,45z',
-        }),
-        createSVGElement('circle', { cx: '10', cy: '15', r: '4' }),
-      ]),
       createSVGElement('rect', {
         width: '50',
         height: '50',
@@ -188,6 +183,12 @@ export function createPhotoSVG(): SVGElement {
         stroke: '#aaa',
         'stroke-width': '2',
       }),
+      createSVGElement('g', { fill: '#aaa' }, [
+        createSVGElement('path', {
+          d: 'M0,45 L0,40 L15,25 L20,30 L30,20 L50,40 L50,45z',
+        }),
+        createSVGElement('circle', { cx: '10', cy: '15', r: '4' }),
+      ]),
     ]),
   ])
 }
@@ -195,12 +196,6 @@ export function createPhotoSVG(): SVGElement {
 export function createDeleteSVG(): SVGElement {
   return appendChildren(createSvg(), [
     createSVGElement('g', null, [
-      createSVGElement('path', {
-        d: 'M24,24 L76,76 M24,76 L76,24',
-        fill: 'none',
-        stroke: '#aaa',
-        'stroke-width': 12,
-      }),
       createSVGElement('circle', {
         cx: 50,
         cy: 50,
@@ -208,6 +203,12 @@ export function createDeleteSVG(): SVGElement {
         fill: 'none',
         stroke: '#aaa',
         'stroke-width': 10,
+      }),
+      createSVGElement('path', {
+        d: 'M24,24 L76,76 M24,76 L76,24',
+        fill: 'none',
+        stroke: '#aaa',
+        'stroke-width': 12,
       }),
     ]),
   ])
