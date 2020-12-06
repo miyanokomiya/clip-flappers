@@ -1,4 +1,4 @@
-import ClipFlappers, { Rectangle, Size, clipImage } from '../src/index'
+import { ClipFlappers, Rectangle, Size, clipImage } from '../src/index'
 
 async function addImage(base64: string) {
   const $image = new Image()

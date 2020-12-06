@@ -51,7 +51,7 @@ interface Props {
 const EL_PREFIX = 'clip-f'
 type EL_KEYS = 'drop-button' | 'delete-button'
 
-export default class ClipFlappers {
+export class ClipFlappers {
   private $el: Element
   private $svg: SVGElement | null = null
   private $clipRect: SVGElement | null = null

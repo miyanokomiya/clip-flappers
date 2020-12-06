@@ -1,4 +1,4 @@
-import Target from '../src/index'
+import { ClipFlappers as Target } from '../src/index'
 import { image200x100 } from './assets'
 
 function expectToShow($el: HTMLElement | SVGElement) {
