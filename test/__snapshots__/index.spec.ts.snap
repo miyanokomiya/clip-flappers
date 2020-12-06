@@ -17,7 +17,7 @@ exports[`index snapshot default 1`] = `
         xmlns="http://www.w3.org/2000/svg"
       />
       <button
-        data-key="clip-f_drop-button"
+        data-key="clip-f_drop"
         style="padding:0;margin:0;border:none;background-color:transparent;width:100%;height:100%;cursor:pointer;"
       >
         <svg
@@ -53,7 +53,7 @@ exports[`index snapshot default 1`] = `
         </svg>
       </button>
       <button
-        data-key="clip-f_delete-button"
+        data-key="clip-f_delete"
         style="padding: 0px; margin: 0px; background-color: transparent; position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 100%; cursor: pointer; display: none;"
       >
         <svg
@@ -146,7 +146,7 @@ exports[`index snapshot image loaded 1`] = `
         </g>
       </svg>
       <button
-        data-key="clip-f_drop-button"
+        data-key="clip-f_drop"
         style="padding: 0px; margin: 0px; background-color: transparent; width: 100%; height: 100%; cursor: pointer; display: none;"
       >
         <svg
@@ -182,7 +182,7 @@ exports[`index snapshot image loaded 1`] = `
         </svg>
       </button>
       <button
-        data-key="clip-f_delete-button"
+        data-key="clip-f_delete"
         style="padding: 0px; margin: 0px; background-color: transparent; position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 100%; cursor: pointer;"
       >
         <svg

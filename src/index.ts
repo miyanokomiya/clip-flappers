@@ -48,7 +48,7 @@ interface Props {
 }
 
 const EL_PREFIX = 'clip-f'
-type EL_KEYS = 'error' | 'drop-button' | 'delete-button'
+type EL_KEYS = 'error' | 'drop' | 'delete'
 
 export class ClipFlappers {
   private $el: Element
@@ -109,8 +109,8 @@ export class ClipFlappers {
     this.dragListeners = null
     this.$svg!.innerHTML = ''
     hide(this.$svg)
-    show(this.getElement('drop-button'))
-    hide(this.getElement('delete-button'))
+    show(this.getElement('drop'))
+    hide(this.getElement('delete'))
   }
 
   async clip(): Promise<string> {
@@ -134,7 +134,7 @@ export class ClipFlappers {
       'button',
       {
         onclick: () => $fileInput.click(),
-        ..._getDataKey('drop-button'),
+        ..._getDataKey('drop'),
       },
       [createPhotoSVG()]
     )
@@ -149,7 +149,7 @@ export class ClipFlappers {
       'button',
       {
         onclick: () => this.reset(),
-        ..._getDataKey('delete-button'),
+        ..._getDataKey('delete'),
       },
       [createDeleteSVG()]
     )
@@ -238,8 +238,8 @@ export class ClipFlappers {
       'viewBox',
       `${viewBoxRect.x} ${viewBoxRect.y} ${viewBoxRect.width} ${viewBoxRect.height}`
     )
-    hide(this.getElement('drop-button'))
-    show(this.getElement('delete-button'))
+    hide(this.getElement('drop'))
+    show(this.getElement('delete'))
 
     const scale = getRate(
       this.viewSize,
