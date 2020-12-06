@@ -15,6 +15,7 @@ import {
 
 import {
   g,
+  getResetStyles,
   appendChild,
   appendChildren,
   createSVGElement,
@@ -25,6 +26,9 @@ import {
   createSvgWrapperElm,
   createSvg,
   createPhotoSVG,
+  createDeleteSVG,
+  show,
+  hide,
 } from './el'
 
 export type Rectangle = _Rectangle
@@ -45,7 +49,7 @@ interface Props {
 }
 
 const EL_PREFIX = 'clip-f'
-type EL_KEYS = 'drop-button'
+type EL_KEYS = 'drop-button' | 'delete-button'
 
 export default class ClipFlappers {
   private $el: Element
@@ -94,11 +98,22 @@ export default class ClipFlappers {
       this.$el.parentElement.removeChild(this.$el)
     }
     this.$el = null as any
-    this.$svg = null as any
-    this.$clipRect = null as any
+    this.$svg = null
+    this.$clipRect = null
     this.image = null
     this.disposeWindowPointer()
     this.dragListeners = null
+  }
+
+  reset() {
+    this.$clipRect = null
+    this.image = null
+    this.disposeWindowPointer()
+    this.dragListeners = null
+    this.$svg!.innerHTML = ''
+    hide(this.$svg)
+    show(this.getElement('drop-button'))
+    hide(this.getElement('delete-button'))
   }
 
   async clip(): Promise<string> {
@@ -116,17 +131,42 @@ export default class ClipFlappers {
       accept: 'image/*',
       oninput: (e: any) => this.onInputFile(e),
     })
-    setStyles($fileInput, { display: 'none' })
+    hide($fileInput)
 
-    const $button = createHTMLElement(
+    const $dropButton = createHTMLElement(
       'button',
       {
         onclick: () => $fileInput.click(),
-        style: 'width:100%;height:100%;',
         ..._getDataKey('drop-button'),
       },
       [createPhotoSVG()]
     )
+    setStyles($dropButton, {
+      ...getResetStyles(),
+      width: '100%',
+      height: '100%',
+      cursor: 'pointer',
+    })
+
+    const $deleteButton = createHTMLElement(
+      'button',
+      {
+        onclick: () => this.reset(),
+        ..._getDataKey('delete-button'),
+      },
+      [createDeleteSVG()]
+    )
+    setStyles($deleteButton, {
+      ...getResetStyles(),
+      position: 'absolute',
+      top: '4px',
+      right: '4px',
+      width: '20px',
+      height: '20px',
+      'border-radius': '100%',
+      cursor: 'pointer',
+    })
+    hide($deleteButton)
 
     const $svgWrapper = createSvgWrapperElm(this.viewSize)
     $svgWrapper.ondragover = (e: DragEvent) => {
@@ -146,12 +186,12 @@ export default class ClipFlappers {
       this.onInputFile(e)
     }
     this.$svg = createSvg()
-    this.$svg.style.display = 'none'
+    hide(this.$svg)
 
     appendChildren(this.$el, [
       appendChildren(createHTMLElement('div', null, []), [
         $fileInput,
-        appendChildren($svgWrapper, [$button, this.$svg]),
+        appendChildren($svgWrapper, [this.$svg, $dropButton, $deleteButton]),
       ]),
     ])
   }
@@ -162,13 +202,14 @@ export default class ClipFlappers {
     const viewBoxRect = getCentralizedViewBox(this.clipSize, image)
     const $svg = this.$svg!
     $svg.innerHTML = ''
-    $svg.style.display = ''
+    show($svg)
     setAttribute(
       $svg,
       'viewBox',
       `${viewBoxRect.x} ${viewBoxRect.y} ${viewBoxRect.width} ${viewBoxRect.height}`
     )
-    this.getElement('drop-button')!.style.display = 'none'
+    hide(this.getElement('drop-button'))
+    show(this.getElement('delete-button'))
 
     const scale = getRate(
       this.viewSize,
@@ -177,9 +218,7 @@ export default class ClipFlappers {
 
     const dragListeners = useDrag((args) => this.onDrag(args, scale))
     this.dragListeners = dragListeners
-    if (this.disposeWindowPointer) {
-      this.disposeWindowPointer()
-    }
+    this.disposeWindowPointer()
     this.disposeWindowPointer = useWindowPointerEffect({
       onMove: dragListeners.onMove,
       onUp: this.onUp,

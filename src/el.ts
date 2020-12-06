@@ -12,6 +12,15 @@ export const setAttribute = ($el: Element, name: string, value: string) =>
 
 export type Attributes = { [key: string]: string | number | Function } | null
 
+export function getResetStyles() {
+  return {
+    padding: '0',
+    margin: '0',
+    border: 'none',
+    'background-color': 'transparent',
+  }
+}
+
 export function appendChildren<T extends Element>(
   $parent: T,
   $children: Element[]
@@ -141,6 +150,7 @@ export function createSvgWrapperElm(viewSize: Size): HTMLElement {
     border: '1px solid #000',
     backgroundColor: '#ccc',
     overflow: 'hidden',
+    position: 'relative',
     width: `${viewSize.width}px`,
     height: `${viewSize.height}px`,
   })
@@ -180,4 +190,42 @@ export function createPhotoSVG(): SVGElement {
       }),
     ]),
   ])
+}
+
+export function createDeleteSVG(): SVGElement {
+  return appendChildren(createSvg(), [
+    createSVGElement('g', null, [
+      createSVGElement('path', {
+        d: 'M24,24 L76,76 M24,76 L76,24',
+        fill: 'none',
+        stroke: '#aaa',
+        'stroke-width': 12,
+      }),
+      createSVGElement('circle', {
+        cx: 50,
+        cy: 50,
+        r: 50,
+        fill: 'none',
+        stroke: '#aaa',
+        'stroke-width': 10,
+      }),
+    ]),
+  ])
+}
+
+export function show<T extends HTMLElement | SVGElement | null>(
+  $el: T,
+  display?: string
+): T {
+  if ($el) {
+    $el.style.display = display ?? ''
+  }
+  return $el
+}
+
+export function hide<T extends HTMLElement | SVGElement | null>($el: T): T {
+  if ($el) {
+    $el.style.display = 'none'
+  }
+  return $el
 }
