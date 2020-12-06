@@ -2,7 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # clip-flappers
-some utils for a canvas
+This is the component to clip a image without any frontend framework.
 
 ## demo
 https://miyanokomiya.github.io/clip-flappers/
@@ -44,4 +44,6 @@ $ yarn build
 ```
 
 ## publish
+[TODO]
+
 Update `version` in `package.json`, commit with a comment `Release x.x.x` and merge into the `main` branch.
