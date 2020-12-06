@@ -8,8 +8,6 @@ This is the component to clip a image without any frontend framework.
 https://miyanokomiya.github.io/clip-flappers/
 
 ## usage
-[WIP]
-
 ```ts
 import { ClipFlappers, Rectangle, Size, clipImage } from 'clip-flappers'
 
