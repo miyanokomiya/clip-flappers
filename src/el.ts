@@ -94,32 +94,14 @@ export function createClipRectElm(
   }
 ): SVGElement {
   const $moveG = createSVGElement('g', null, [
-    createSVGElement('circle', {
-      cx: 0,
-      cy: 0,
-      r: 8 * scale,
-      fill: 'red',
-      stroke: 'none',
-      onmousedown: listeners.onStartMove,
-      ontouchstart: listeners.onStartMove,
-    }),
+    createMoveAnchor(scale, listeners.onStartMove),
   ])
   const $resizeG = createSVGElement(
     'g',
     {
       transform: `translate(${clipRect.width}, ${clipRect.height})`,
     },
-    [
-      createSVGElement('circle', {
-        cx: 0,
-        cy: 0,
-        r: 8 * scale,
-        fill: 'red',
-        stroke: 'none',
-        onmousedown: listeners.onStartResize,
-        ontouchstart: listeners.onStartResize,
-      }),
-    ]
+    [createResizeAnchor(scale, listeners.onStartResize)]
   )
   const $g = createSVGElement(
     'g',
@@ -169,6 +151,36 @@ export function createSvg(): SVGElement {
     height: '100%',
   })
   return $svg
+}
+
+function createMoveAnchor(
+  scale: number,
+  onStartMove: (e: any) => void
+): SVGElement {
+  return createSVGElement('circle', {
+    cx: 0,
+    cy: 0,
+    r: 8 * scale,
+    fill: 'red',
+    stroke: 'none',
+    onmousedown: onStartMove,
+    ontouchstart: onStartMove,
+  })
+}
+
+function createResizeAnchor(
+  scale: number,
+  onStartMove: (e: any) => void
+): SVGElement {
+  return createSVGElement('circle', {
+    cx: 0,
+    cy: 0,
+    r: 8 * scale,
+    fill: 'red',
+    stroke: 'none',
+    onmousedown: onStartMove,
+    ontouchstart: onStartMove,
+  })
 }
 
 export function createPhotoSVG(): SVGElement {
