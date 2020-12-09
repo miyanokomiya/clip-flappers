@@ -44,6 +44,6 @@
     "typescript": "^4.1.2"
   },
   "dependencies": {
-    "okanvas": "^0.0.3"
+    "okanvas": "^0.0.4"
   }
 }

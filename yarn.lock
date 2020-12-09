@@ -5265,11 +5265,6 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-just-throttle@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/just-throttle/-/just-throttle-1.1.0.tgz#178d305ece9876a8a0759abd8d403aafcc6e4849"
-  integrity sha512-iePC/13XYX1Tyn9C6jY+DG3UEejkDvrKsw5xxgGhtGUwYWmoJm4CoKexscBKELOu3FTyCDzjr21ZJ67AXnz+bg==
-
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -5924,12 +5919,10 @@ object.values@^1.1.0, object.values@^1.1.1:
     function-bind "^1.1.1"
     has "^1.0.3"
 
-okanvas@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/okanvas/-/okanvas-0.0.3.tgz#458c9e731486023a172ed0e98becaf5ed8ca2b3f"
-  integrity sha512-vckIr7MxFy3nuV23PHk4H2eR7o0qmi0WA4jJFuDHxdJ9O8DxirgZVlHIbGVbRcuNixuNeE/YKx/ZsBgUTYiUAQ==
-  dependencies:
-    just-throttle "^1.1.0"
+okanvas@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/okanvas/-/okanvas-0.0.4.tgz#5c0eb0e9ffba9ec03ef2810e7467216b5ee3cf89"
+  integrity sha512-jMvfnODVQQ+NObgTO8dQ8/MG4izZ0Rf4IQrVWJOFAHCsfo8hjxX/y7o4/NmVNgaMM/SBb1Qd9qyP7/1no1jpXQ==
 
 on-finished@~2.3.0:
   version "2.3.0"
