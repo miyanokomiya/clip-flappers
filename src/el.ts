@@ -116,7 +116,7 @@ export function createClipRectElm(
         height: clipRect.height,
         fill: 'none',
         stroke: 'red',
-        'stroke-width': 4 * scale,
+        'stroke-width': 3 * scale,
       }),
       $moveG,
       $resizeG,
@@ -157,30 +157,52 @@ function createMoveAnchor(
   scale: number,
   onStartMove: (e: any) => void
 ): SVGElement {
-  return createSVGElement('circle', {
-    cx: 0,
-    cy: 0,
-    r: 8 * scale,
-    fill: 'red',
-    stroke: 'none',
-    onmousedown: onStartMove,
-    ontouchstart: onStartMove,
-  })
+  return createSVGElement(
+    'g',
+    {
+      onmousedown: onStartMove,
+      ontouchstart: onStartMove,
+      transform: `scale(${scale})`,
+      stroke: 'none',
+      style: 'cursor:pointer',
+    },
+    [
+      createSVGElement('circle', {
+        r: 8,
+        fill: 'red',
+      }),
+      createSVGElement('path', {
+        d: 'M-6-2L-6 2L6 2L6-2zM-2-6L-2 6L2 6L2-6z',
+        fill: '#fff',
+      }),
+    ]
+  )
 }
 
 function createResizeAnchor(
   scale: number,
-  onStartMove: (e: any) => void
+  onStartResize: (e: any) => void
 ): SVGElement {
-  return createSVGElement('circle', {
-    cx: 0,
-    cy: 0,
-    r: 8 * scale,
-    fill: 'red',
-    stroke: 'none',
-    onmousedown: onStartMove,
-    ontouchstart: onStartMove,
-  })
+  return createSVGElement(
+    'g',
+    {
+      onmousedown: onStartResize,
+      ontouchstart: onStartResize,
+      transform: `scale(${scale}) rotate(45)`,
+      stroke: 'none',
+      style: 'cursor:pointer',
+    },
+    [
+      createSVGElement('circle', {
+        r: 8,
+        fill: 'red',
+      }),
+      createSVGElement('path', {
+        d: 'M-2-2-2-5L-7 0L-2 5L-2 2L2 2L2 5L7 0L2-5L2-2z',
+        fill: '#fff',
+      }),
+    ]
+  )
 }
 
 export function createPhotoSVG(): SVGElement {
@@ -197,7 +219,7 @@ export function createPhotoSVG(): SVGElement {
       }),
       createSVGElement('g', { fill: '#aaa' }, [
         createSVGElement('path', {
-          d: 'M0,45 L0,40 L15,25 L20,30 L30,20 L50,40 L50,45z',
+          d: 'M0 45L0 40L15 25L20 30L30 20L50 40L50 45z',
         }),
         createSVGElement('circle', { cx: '10', cy: '15', r: '4' }),
       ]),
@@ -217,7 +239,7 @@ export function createDeleteSVG(): SVGElement {
         'stroke-width': 10,
       }),
       createSVGElement('path', {
-        d: 'M24,24 L76,76 M24,76 L76,24',
+        d: 'M24 24L76 76M24 76L76,24',
         fill: 'none',
         stroke: '#aaa',
         'stroke-width': 12,
