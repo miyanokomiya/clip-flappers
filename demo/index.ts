@@ -26,6 +26,7 @@ function init() {
       height: 200,
     },
     onUpdateClip: onUpdateClip,
+    overflow: true,
   })
 }
 

@@ -2,7 +2,7 @@ import { Size, Rectangle } from 'okanvas'
 
 const SVG_URL = 'http://www.w3.org/2000/svg'
 
-export const g = (el: string) => document.getElementById(el)
+export const getElementById = (el: string) => document.getElementById(el)
 export const appendChild = (
   $el: Element | DocumentFragment,
   $child: Element | DocumentFragment
@@ -227,22 +227,46 @@ export function createPhotoSVG(): SVGElement {
   ])
 }
 
+function createIconCircle(color = '#aaa'): SVGElement {
+  return createSVGElement('circle', {
+    cx: 50,
+    cy: 50,
+    r: 50,
+    fill: 'none',
+    stroke: color,
+    'stroke-width': 10,
+  })
+}
+
 export function createDeleteSVG(): SVGElement {
   return appendChildren(createSvg(), [
     createSVGElement('g', null, [
-      createSVGElement('circle', {
-        cx: 50,
-        cy: 50,
-        r: 50,
-        fill: 'none',
-        stroke: '#aaa',
-        'stroke-width': 10,
-      }),
+      createIconCircle(),
       createSVGElement('path', {
         d: 'M24 24L76 76M24 76L76,24',
         fill: 'none',
         stroke: '#aaa',
         'stroke-width': 12,
+      }),
+    ]),
+  ])
+}
+
+export function createOverflowSVG(light = false): SVGElement {
+  const color = light ? 'limegreen' : '#aaa'
+  return appendChildren(createSvg(), [
+    createSVGElement('g', null, [
+      createIconCircle(color),
+      createSVGElement('path', {
+        d: 'M40 6L40 80L14 80',
+        fill: 'none',
+        stroke: color,
+        'stroke-width': 8,
+      }),
+      createSVGElement('path', {
+        d: 'M90 50L60 80L60 58L20 58L20 42L60 42L60 20z',
+        fill: color,
+        stroke: 'none',
       }),
     ]),
   ])

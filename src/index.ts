@@ -14,7 +14,7 @@ import {
 } from 'okanvas'
 
 import {
-  g,
+  getElementById,
   getResetStyles,
   appendChild,
   appendChildren,
@@ -27,6 +27,7 @@ import {
   createSvg,
   createPhotoSVG,
   createDeleteSVG,
+  createOverflowSVG,
   show,
   hide,
 } from './el'
@@ -43,12 +44,13 @@ export interface ErrorMessages {
 interface Props {
   viewSize?: Size
   clipSize?: Size
+  overflow?: boolean
   errorMessages?: ErrorMessages
   onUpdateClip?: (base64: string, clipRect: Rectangle, size: Size) => void
 }
 
 const EL_PREFIX = 'clip-f'
-type EL_KEYS = 'error' | 'drop' | 'delete'
+type EL_KEYS = 'error' | 'drop' | 'delete' | 'overflow'
 
 export class ClipFlappers {
   private $el: Element
@@ -73,11 +75,13 @@ export class ClipFlappers {
     | ((base64: string, clipRect: Rectangle, size: Size) => void)
     | null = null
 
+  private overflow: boolean = false
+
   constructor(el: string | Element, props?: Props) {
     if (el instanceof Element) {
       this.$el = el
     } else {
-      const $el = g(el)
+      const $el = getElementById(el)
       if (!($el instanceof Element)) {
         throw new Error(`Failed to mount target: ${el}`)
       }
@@ -88,6 +92,7 @@ export class ClipFlappers {
     if (props?.viewSize) this.viewSize = props.viewSize
     if (props?.clipSize) this.clipSize = props.clipSize
     if (props?.onUpdateClip) this.onUpdateClip = props.onUpdateClip
+    if (props?.overflow) this.overflow = props.overflow
 
     this.render()
   }
@@ -111,6 +116,17 @@ export class ClipFlappers {
     hide(this.$svg)
     show(this.getElement('drop'))
     hide(this.getElement('delete'))
+    hide(this.getElement('overflow'))
+  }
+
+  toggleOverflow() {
+    this.overflow = !this.overflow
+    if (this.clipRect) this.updateClipRect(this.clipRect)
+    const $overflowButton = this.getElement('overflow')
+    if ($overflowButton) {
+      $overflowButton.innerHTML = ''
+      appendChild($overflowButton, createOverflowSVG(this.overflow))
+    }
   }
 
   async clip(): Promise<string> {
@@ -165,6 +181,26 @@ export class ClipFlappers {
     })
     hide($deleteButton)
 
+    const $overflowButton = createHTMLElement(
+      'button',
+      {
+        onclick: () => this.toggleOverflow(),
+        ..._getDataKey('overflow'),
+      },
+      [createOverflowSVG(this.overflow)]
+    )
+    setStyles($overflowButton, {
+      ...getResetStyles(),
+      position: 'absolute',
+      top: '28px',
+      right: '4px',
+      width: '20px',
+      height: '20px',
+      'border-radius': '100%',
+      cursor: 'pointer',
+    })
+    hide($overflowButton)
+
     const $errorMessage = createHTMLElement('p', {
       ..._getDataKey('error'),
       onclick: () => this.hideError(),
@@ -212,6 +248,7 @@ export class ClipFlappers {
           this.$svg,
           $dropButton,
           $deleteButton,
+          $overflowButton,
           $errorMessage,
         ]),
       ]),
@@ -240,6 +277,7 @@ export class ClipFlappers {
     )
     hide(this.getElement('drop'))
     show(this.getElement('delete'))
+    show(this.getElement('overflow'))
 
     const scale = getRate(
       this.viewSize,
@@ -254,7 +292,19 @@ export class ClipFlappers {
       onUp: this.onUp,
     })
 
-    this.clipRect = { ...viewBoxRect }
+    this.clipRect = this.overflow
+      ? { ...viewBoxRect }
+      : _adjustInRect(
+          viewBoxRect,
+          {
+            x: 0,
+            y: 0,
+            width: image.width,
+            height: image.height,
+          },
+          true
+        )
+
     this.$clipRect = createClipRectElm(this.clipRect, scale, {
       onStartMove: this.onStartMove,
       onStartResize: this.onStartResize,
@@ -298,13 +348,24 @@ export class ClipFlappers {
     this.dragListeners.onDown(e)
   }
 
-  private updateClipRect(rect: Rectangle) {
-    if (_isSameRect(this.clipRect, rect)) return
+  private updateClipRect(_rect: Rectangle) {
     if (!this.$svg) return
     if (!this.$clipRect) return
     if (!this.image) return
     if (!this.clipRect) return
 
+    const rect = this.overflow
+      ? _rect
+      : _adjustInRect(_rect, {
+          x: 0,
+          y: 0,
+          width: this.image.width,
+          height: this.image.height,
+        })
+
+    if (_isSameRect(this.clipRect, rect)) return
+
+    this.clipRect = rect
     const scale = getRate(
       this.viewSize,
       getCentralizedViewBox(this.clipSize, this.image)
@@ -315,7 +376,6 @@ export class ClipFlappers {
     })
     this.$svg.removeChild(this.$clipRect)
     appendChild(this.$svg, $clipRect)
-    this.clipRect = rect
     this.$clipRect = $clipRect
   }
 
@@ -418,4 +478,31 @@ function _isSameRect(a: Rectangle | null, b: Rectangle | null): boolean {
     a.width === b.width &&
     a.height === b.height
   )
+}
+
+function _adjustInRect(
+  target: Rectangle,
+  base: Rectangle,
+  centralize = false
+): Rectangle {
+  const minRate = Math.min(getRate(target, base).minRate, 1)
+  const width = target.width * minRate
+  const height = target.height * minRate
+  return centralize
+    ? {
+        x: base.x + (base.width - width) / 2,
+        y: base.y + (base.height - height) / 2,
+        width,
+        height,
+      }
+    : {
+        x: _getInRange(target.x, base.x, base.x + base.width - width),
+        y: _getInRange(target.y, base.y, base.y + base.height - height),
+        width,
+        height,
+      }
+}
+
+function _getInRange(val: number, min: number, max: number): number {
+  return Math.min(max, Math.max(val, min))
 }
