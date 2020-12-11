@@ -61,7 +61,7 @@ describe('index', () => {
     })
   })
 
-  describe('dispolse', () => {
+  describe('dispose', () => {
     it('remove all DOM', async () => {
       const $el = document.createElement('div')
       const app = new Target($el) as any
