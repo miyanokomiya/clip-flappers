@@ -1,4 +1,4 @@
-import { Size, Rectangle } from 'okanvas'
+import { Vector, Size, Rectangle } from 'okanvas'
 
 const SVG_URL = 'http://www.w3.org/2000/svg'
 
@@ -93,42 +93,54 @@ export function createClipRectElm(
     onStartResize: (e: any) => void
   }
 ): SVGElement {
-  const $moveG = createSVGElement('g', null, [
-    createMoveAnchor(scale, listeners.onStartMove),
-  ])
+  const ip0 = { x: 0, y: 0 }
+  const ip1 = { x: clipRect.width, y: 0 }
+  const ip2 = {
+    x: clipRect.width,
+    y: clipRect.height,
+  }
+  const ip3 = { x: 0, y: clipRect.height }
+
+  const lineWidth = 4 * scale
+  const op0 = { x: -lineWidth, y: -lineWidth }
+  const op1 = { x: ip1.x + lineWidth, y: -lineWidth }
+  const op2 = { x: ip2.x + lineWidth, y: ip2.y + lineWidth }
+  const op3 = { x: -lineWidth, y: ip3.y + lineWidth }
+
+  const anchorOffset = 6 * scale
+  const $moveG = createSVGElement(
+    'g',
+    { transform: `translate(${-anchorOffset}, ${-anchorOffset})` },
+    [createMoveAnchor(scale, listeners.onStartMove)]
+  )
   const $resizeG = createSVGElement(
     'g',
     {
-      transform: `translate(${clipRect.width}, ${clipRect.height})`,
+      transform: `translate(${anchorOffset + clipRect.width}, ${
+        anchorOffset + clipRect.height
+      })`,
     },
     [createResizeAnchor(scale, listeners.onStartResize)]
   )
-  const $g = createSVGElement(
+  return createSVGElement(
     'g',
-    {
-      transform: `translate(${clipRect.x}, ${clipRect.y})`,
-    },
+    { transform: `translate(${clipRect.x}, ${clipRect.y})` },
     [
-      createSVGElement('rect', {
-        x: 0,
-        y: 0,
-        width: clipRect.width,
-        height: clipRect.height,
-        fill: 'none',
-        stroke: 'red',
-        'stroke-width': 3 * scale,
+      createSVGElement('path', {
+        d: getD([op0, op1, op2, op3, op0, ip0, ip3, ip2, ip1, ip0]),
+        fill: 'red',
+        stroke: 'none',
       }),
       $moveG,
       $resizeG,
     ]
   )
-  return $g
 }
 
 export function createSvgWrapperElm(viewSize: Size): HTMLElement {
   const $svgWrapper = createHTMLElement('div')
   setStyles($svgWrapper, {
-    padding: '8px',
+    padding: '16px',
     border: '3px solid #aaa',
     'border-radius': '8px',
     'background-color': '#f4f4f4',
@@ -309,4 +321,8 @@ export function bindDrop(
     $el.style.opacity = ''
     onDrop(e)
   }
+}
+
+function getD(polygon: Vector[]): string {
+  return `M${polygon.map((p) => `${p.x} ${p.y}`).join('L')}z`
 }

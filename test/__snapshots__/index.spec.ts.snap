@@ -9,7 +9,7 @@ exports[`index snapshot default 1`] = `
       type="file"
     />
     <div
-      style="padding:8px;border:3px solid #aaa;border-radius:8px;background-color:#f4f4f4;overflow:hidden;position:relative;width:124px;height:124px;"
+      style="padding:16px;border:3px solid #aaa;border-radius:8px;background-color:#f4f4f4;overflow:hidden;position:relative;width:124px;height:124px;"
     >
       <svg
         style="overflow: visible; width: 100%; height: 100%; display: none;"
@@ -138,7 +138,7 @@ exports[`index snapshot image loaded 1`] = `
       type="file"
     />
     <div
-      style="padding:8px;border:3px solid #aaa;border-radius:8px;background-color:#f4f4f4;overflow:hidden;position:relative;width:124px;height:124px;"
+      style="padding:16px;border:3px solid #aaa;border-radius:8px;background-color:#f4f4f4;overflow:hidden;position:relative;width:124px;height:124px;"
     >
       <svg
         style="overflow: visible; width: 100%; height: 100%;"
@@ -153,16 +153,14 @@ exports[`index snapshot image loaded 1`] = `
         <g
           transform="translate(50, 0)"
         >
-          <rect
-            fill="none"
-            height="100"
-            stroke="red"
-            stroke-width="4.838709677419354"
-            width="100"
-            x="0"
-            y="0"
+          <path
+            d="M-6.451612903225806 -6.451612903225806L106.45161290322581 -6.451612903225806L106.45161290322581 106.45161290322581L-6.451612903225806 106.45161290322581L-6.451612903225806 -6.451612903225806L0 0L0 100L100 100L100 0L0 0z"
+            fill="red"
+            stroke="none"
           />
-          <g>
+          <g
+            transform="translate(-9.677419354838708, -9.677419354838708)"
+          >
             <g
               stroke="none"
               style="cursor:pointer"
@@ -179,7 +177,7 @@ exports[`index snapshot image loaded 1`] = `
             </g>
           </g>
           <g
-            transform="translate(100, 100)"
+            transform="translate(109.6774193548387, 109.6774193548387)"
           >
             <g
               stroke="none"
