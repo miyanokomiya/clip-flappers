@@ -122,11 +122,15 @@ export class ClipFlappers {
 
   toggleOverflow() {
     this.overflow = !this.overflow
-    if (this.clipRect) this.updateClipRect(this.clipRect)
     const $overflowButton = this.getElement('overflow')
     if ($overflowButton) {
       $overflowButton.innerHTML = ''
       appendChild($overflowButton, createOverflowSVG(this.overflow))
+    }
+    if (this.clipRect) {
+      const oldClipRect = { ...this.clipRect }
+      this.updateClipRect(this.clipRect)
+      if (!isSameRect(oldClipRect, this.clipRect)) this.onCompleteClip()
     }
   }
 
