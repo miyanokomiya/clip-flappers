@@ -50,7 +50,7 @@ interface Props {
 }
 
 const EL_PREFIX = 'clip-f'
-type EL_KEYS = 'error' | 'drop' | 'delete' | 'overflow'
+type EL_KEYS = 'error' | 'drop' | 'delete' | 'overflow' | 'tools'
 
 export class ClipFlappers {
   private $el: Element
@@ -115,8 +115,7 @@ export class ClipFlappers {
     this.$svg!.innerHTML = ''
     hide(this.$svg)
     show(this.getElement('drop'))
-    hide(this.getElement('delete'))
-    hide(this.getElement('overflow'))
+    hide(this.getElement('tools'))
   }
 
   toggleOverflow() {
@@ -161,6 +160,15 @@ export class ClipFlappers {
       cursor: 'pointer',
     })
 
+    const toolButtonStyles = {
+      ...getResetStyles(),
+      width: '20px',
+      height: '20px',
+      'border-radius': '100%',
+      cursor: 'pointer',
+      'margin-bottom': '6px',
+    }
+
     const $deleteButton = createHTMLElement(
       'button',
       {
@@ -169,17 +177,7 @@ export class ClipFlappers {
       },
       [createDeleteSVG()]
     )
-    setStyles($deleteButton, {
-      ...getResetStyles(),
-      position: 'absolute',
-      top: '4px',
-      right: '4px',
-      width: '20px',
-      height: '20px',
-      'border-radius': '100%',
-      cursor: 'pointer',
-    })
-    hide($deleteButton)
+    setStyles($deleteButton, toolButtonStyles)
 
     const $overflowButton = createHTMLElement(
       'button',
@@ -189,17 +187,25 @@ export class ClipFlappers {
       },
       [createOverflowSVG(this.overflow)]
     )
-    setStyles($overflowButton, {
-      ...getResetStyles(),
-      position: 'absolute',
-      top: '28px',
-      right: '4px',
-      width: '20px',
-      height: '20px',
-      'border-radius': '100%',
-      cursor: 'pointer',
-    })
-    hide($overflowButton)
+    setStyles($overflowButton, toolButtonStyles)
+
+    const $tools = createHTMLElement(
+      'div',
+      {
+        style: 'position:absolute;top:2px;right:2px;',
+        ..._getDataKey('tools'),
+      },
+      [
+        createHTMLElement(
+          'div',
+          {
+            style: 'display:flex;flex-direction:column;',
+          },
+          [$deleteButton, $overflowButton]
+        ),
+      ]
+    )
+    hide($tools)
 
     const $errorMessage = createHTMLElement('p', {
       ..._getDataKey('error'),
@@ -247,8 +253,7 @@ export class ClipFlappers {
         appendChildren($svgWrapper, [
           this.$svg,
           $dropButton,
-          $deleteButton,
-          $overflowButton,
+          $tools,
           $errorMessage,
         ]),
       ]),
@@ -276,8 +281,7 @@ export class ClipFlappers {
       `${viewBoxRect.x} ${viewBoxRect.y} ${viewBoxRect.width} ${viewBoxRect.height}`
     )
     hide(this.getElement('drop'))
-    show(this.getElement('delete'))
-    show(this.getElement('overflow'))
+    show(this.getElement('tools'))
 
     const scale = getRate(
       this.viewSize,

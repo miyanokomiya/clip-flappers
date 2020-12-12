@@ -15,8 +15,7 @@ describe('index', () => {
       const app = new Target($el) as any
 
       expectToShow(app.$el.querySelector('[data-key="clip-f_drop"]'))
-      expectToHide(app.$el.querySelector('[data-key="clip-f_delete"]'))
-      expectToHide(app.$el.querySelector('[data-key="clip-f_overflow"]'))
+      expectToHide(app.$el.querySelector('[data-key="clip-f_tools"]'))
       expectToHide(app.$svg)
       expect(
         app.$el.querySelector('[data-key="clip-f_error"]')!.style.transform
@@ -29,8 +28,7 @@ describe('index', () => {
       await app.updateImage(image200x100)
 
       expectToHide(app.$el.querySelector('[data-key="clip-f_drop"]'))
-      expectToShow(app.$el.querySelector('[data-key="clip-f_delete"]'))
-      expectToShow(app.$el.querySelector('[data-key="clip-f_overflow"]'))
+      expectToShow(app.$el.querySelector('[data-key="clip-f_tools"]'))
       expectToShow(app.$svg)
       expect(app.$el).toMatchSnapshot()
     })
@@ -43,8 +41,7 @@ describe('index', () => {
       await app.updateImage(image200x100)
       app.$el.querySelector('[data-key="clip-f_delete"]').click()
       expectToShow(app.$el.querySelector('[data-key="clip-f_drop"]'))
-      expectToHide(app.$el.querySelector('[data-key="clip-f_delete"]'))
-      expectToHide(app.$el.querySelector('[data-key="clip-f_overflow"]'))
+      expectToHide(app.$el.querySelector('[data-key="clip-f_tools"]'))
       expectToHide(app.$svg)
     })
   })

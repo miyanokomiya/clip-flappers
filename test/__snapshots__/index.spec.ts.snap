@@ -52,65 +52,74 @@ exports[`index snapshot default 1`] = `
           </g>
         </svg>
       </button>
-      <button
-        data-key="clip-f_delete"
-        style="padding: 0px; margin: 0px; background-color: transparent; position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 100%; cursor: pointer; display: none;"
+      <div
+        data-key="clip-f_tools"
+        style="position: absolute; top: 2px; right: 2px; display: none;"
       >
-        <svg
-          style="overflow:visible;width:100%;height:100%;"
-          viewBox="0 0 100 100"
-          xmlns="http://www.w3.org/2000/svg"
+        <div
+          style="display:flex;flex-direction:column;"
         >
-          <g>
-            <circle
-              cx="50"
-              cy="50"
-              fill="none"
-              r="50"
-              stroke="#aaa"
-              stroke-width="10"
-            />
-            <path
-              d="M24 24L76 76M24 76L76,24"
-              fill="none"
-              stroke="#aaa"
-              stroke-width="12"
-            />
-          </g>
-        </svg>
-      </button>
-      <button
-        data-key="clip-f_overflow"
-        style="padding: 0px; margin: 0px; background-color: transparent; position: absolute; top: 28px; right: 4px; width: 20px; height: 20px; border-radius: 100%; cursor: pointer; display: none;"
-      >
-        <svg
-          style="overflow:visible;width:100%;height:100%;"
-          viewBox="0 0 100 100"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g>
-            <circle
-              cx="50"
-              cy="50"
-              fill="none"
-              r="50"
-              stroke="#aaa"
-              stroke-width="10"
-            />
-            <path
-              d="M40 6L40 80L14 80"
-              fill="none"
-              stroke="#aaa"
-              stroke-width="8"
-            />
-            <path
-              d="M90 50L60 80L60 58L20 58L20 42L60 42L60 20z"
-              fill="#aaa"
-              stroke="none"
-            />
-          </g>
-        </svg>
-      </button>
+          <button
+            data-key="clip-f_delete"
+            style="padding:0;margin:0;border:none;background-color:transparent;width:20px;height:20px;border-radius:100%;cursor:pointer;margin-bottom:6px;"
+          >
+            <svg
+              style="overflow:visible;width:100%;height:100%;"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g>
+                <circle
+                  cx="50"
+                  cy="50"
+                  fill="none"
+                  r="50"
+                  stroke="#aaa"
+                  stroke-width="10"
+                />
+                <path
+                  d="M24 24L76 76M24 76L76,24"
+                  fill="none"
+                  stroke="#aaa"
+                  stroke-width="12"
+                />
+              </g>
+            </svg>
+          </button>
+          <button
+            data-key="clip-f_overflow"
+            style="padding:0;margin:0;border:none;background-color:transparent;width:20px;height:20px;border-radius:100%;cursor:pointer;margin-bottom:6px;"
+          >
+            <svg
+              style="overflow:visible;width:100%;height:100%;"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g>
+                <circle
+                  cx="50"
+                  cy="50"
+                  fill="none"
+                  r="50"
+                  stroke="#aaa"
+                  stroke-width="10"
+                />
+                <path
+                  d="M40 6L40 80L14 80"
+                  fill="none"
+                  stroke="#aaa"
+                  stroke-width="8"
+                />
+                <path
+                  d="M90 50L60 80L60 58L20 58L20 42L60 42L60 20z"
+                  fill="#aaa"
+                  stroke="none"
+                />
+              </g>
+            </svg>
+          </button>
+        </div>
+      </div>
       <p
         data-key="clip-f_error"
         style="padding:4px 8px;margin:0;border:none;background-color:red;position:absolute;bottom:0;left:0;right:0;color:white;font-size:16px;word-break:break-all;cursor:pointer;transition:0.5s all;transform:translateY(100%);"
@@ -227,65 +236,74 @@ exports[`index snapshot image loaded 1`] = `
           </g>
         </svg>
       </button>
-      <button
-        data-key="clip-f_delete"
-        style="padding: 0px; margin: 0px; background-color: transparent; position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 100%; cursor: pointer;"
+      <div
+        data-key="clip-f_tools"
+        style="position: absolute; top: 2px; right: 2px;"
       >
-        <svg
-          style="overflow:visible;width:100%;height:100%;"
-          viewBox="0 0 100 100"
-          xmlns="http://www.w3.org/2000/svg"
+        <div
+          style="display:flex;flex-direction:column;"
         >
-          <g>
-            <circle
-              cx="50"
-              cy="50"
-              fill="none"
-              r="50"
-              stroke="#aaa"
-              stroke-width="10"
-            />
-            <path
-              d="M24 24L76 76M24 76L76,24"
-              fill="none"
-              stroke="#aaa"
-              stroke-width="12"
-            />
-          </g>
-        </svg>
-      </button>
-      <button
-        data-key="clip-f_overflow"
-        style="padding: 0px; margin: 0px; background-color: transparent; position: absolute; top: 28px; right: 4px; width: 20px; height: 20px; border-radius: 100%; cursor: pointer;"
-      >
-        <svg
-          style="overflow:visible;width:100%;height:100%;"
-          viewBox="0 0 100 100"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g>
-            <circle
-              cx="50"
-              cy="50"
-              fill="none"
-              r="50"
-              stroke="#aaa"
-              stroke-width="10"
-            />
-            <path
-              d="M40 6L40 80L14 80"
-              fill="none"
-              stroke="#aaa"
-              stroke-width="8"
-            />
-            <path
-              d="M90 50L60 80L60 58L20 58L20 42L60 42L60 20z"
-              fill="#aaa"
-              stroke="none"
-            />
-          </g>
-        </svg>
-      </button>
+          <button
+            data-key="clip-f_delete"
+            style="padding:0;margin:0;border:none;background-color:transparent;width:20px;height:20px;border-radius:100%;cursor:pointer;margin-bottom:6px;"
+          >
+            <svg
+              style="overflow:visible;width:100%;height:100%;"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g>
+                <circle
+                  cx="50"
+                  cy="50"
+                  fill="none"
+                  r="50"
+                  stroke="#aaa"
+                  stroke-width="10"
+                />
+                <path
+                  d="M24 24L76 76M24 76L76,24"
+                  fill="none"
+                  stroke="#aaa"
+                  stroke-width="12"
+                />
+              </g>
+            </svg>
+          </button>
+          <button
+            data-key="clip-f_overflow"
+            style="padding:0;margin:0;border:none;background-color:transparent;width:20px;height:20px;border-radius:100%;cursor:pointer;margin-bottom:6px;"
+          >
+            <svg
+              style="overflow:visible;width:100%;height:100%;"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g>
+                <circle
+                  cx="50"
+                  cy="50"
+                  fill="none"
+                  r="50"
+                  stroke="#aaa"
+                  stroke-width="10"
+                />
+                <path
+                  d="M40 6L40 80L14 80"
+                  fill="none"
+                  stroke="#aaa"
+                  stroke-width="8"
+                />
+                <path
+                  d="M90 50L60 80L60 58L20 58L20 42L60 42L60 20z"
+                  fill="#aaa"
+                  stroke="none"
+                />
+              </g>
+            </svg>
+          </button>
+        </div>
+      </div>
       <p
         data-key="clip-f_error"
         style="padding:4px 8px;margin:0;border:none;background-color:red;position:absolute;bottom:0;left:0;right:0;color:white;font-size:16px;word-break:break-all;cursor:pointer;transition:0.5s all;transform:translateY(100%);"
