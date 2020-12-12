@@ -198,9 +198,7 @@ export class ClipFlappers {
       [
         createHTMLElement(
           'div',
-          {
-            style: 'display:flex;flex-direction:column;',
-          },
+          { style: 'display:flex;flex-direction:column;' },
           [$deleteButton, $overflowButton]
         ),
       ]
@@ -228,22 +226,7 @@ export class ClipFlappers {
     })
 
     const $svgWrapper = createSvgWrapperElm(this.viewSize)
-    $svgWrapper.ondragover = (e: DragEvent) => {
-      e.preventDefault()
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = 'copy'
-      }
-      $svgWrapper.style.opacity = '0.7'
-    }
-    $svgWrapper.ondragleave = (e: DragEvent) => {
-      e.preventDefault()
-      $svgWrapper.style.opacity = ''
-    }
-    $svgWrapper.ondrop = (e: DragEvent) => {
-      e.preventDefault()
-      $svgWrapper.style.opacity = ''
-      this.onInputFile(e)
-    }
+    _bindDrop($svgWrapper, (e) => this.onInputFile(e))
     this.$svg = createSvg()
     hide(this.$svg)
 
@@ -509,4 +492,26 @@ function _adjustInRect(
 
 function _getInRange(val: number, min: number, max: number): number {
   return Math.min(max, Math.max(val, min))
+}
+
+function _bindDrop(
+  $el: HTMLElement | SVGElement,
+  onDrop: (e: DragEvent) => void
+) {
+  $el.ondragover = (e: DragEvent) => {
+    e.preventDefault()
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy'
+    }
+    $el.style.opacity = '0.7'
+  }
+  $el.ondragleave = (e: DragEvent) => {
+    e.preventDefault()
+    $el.style.opacity = ''
+  }
+  $el.ondrop = (e: DragEvent) => {
+    e.preventDefault()
+    $el.style.opacity = ''
+    onDrop(e)
+  }
 }
