@@ -288,3 +288,25 @@ export function hide<T extends HTMLElement | SVGElement | null>($el: T): T {
   }
   return $el
 }
+
+export function bindDrop(
+  $el: HTMLElement | SVGElement,
+  onDrop: (e: DragEvent) => void
+) {
+  $el.ondragover = (e: DragEvent) => {
+    e.preventDefault()
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy'
+    }
+    $el.style.opacity = '0.7'
+  }
+  $el.ondragleave = (e: DragEvent) => {
+    e.preventDefault()
+    $el.style.opacity = ''
+  }
+  $el.ondrop = (e: DragEvent) => {
+    e.preventDefault()
+    $el.style.opacity = ''
+    onDrop(e)
+  }
+}

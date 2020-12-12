@@ -1,7 +1,6 @@
 import {
   Rectangle as _Rectangle,
   Size as _Size,
-  Vector,
   DragArgs,
   PointerListeners,
   fileToBase64,
@@ -30,7 +29,10 @@ import {
   createOverflowSVG,
   show,
   hide,
+  bindDrop,
 } from './el'
+
+import { getPedal, isSameRect, adjustInRect } from './geo'
 
 export type Rectangle = _Rectangle
 export type Size = _Size
@@ -226,7 +228,7 @@ export class ClipFlappers {
     })
 
     const $svgWrapper = createSvgWrapperElm(this.viewSize)
-    _bindDrop($svgWrapper, (e) => this.onInputFile(e))
+    bindDrop($svgWrapper, (e) => this.onInputFile(e))
     this.$svg = createSvg()
     hide(this.$svg)
 
@@ -281,7 +283,7 @@ export class ClipFlappers {
 
     this.clipRect = this.overflow
       ? { ...viewBoxRect }
-      : _adjustInRect(
+      : adjustInRect(
           viewBoxRect,
           {
             x: 0,
@@ -299,8 +301,6 @@ export class ClipFlappers {
 
     appendChildren($svg, [
       createSVGElement('image', {
-        x: 0,
-        y: 0,
         width: image.width,
         height: image.height,
         href: this.base64,
@@ -320,37 +320,32 @@ export class ClipFlappers {
   }
 
   private onStartMove = (e: any) => {
-    if (!this.clipRect) return
-    if (!this.dragListeners) return
+    if (!this.clipRect || !this.dragListeners) return
     this.dragMode = 'move'
     this.clipRectOrg = { ...this.clipRect }
     this.dragListeners.onDown(e)
   }
 
   private onStartResize = (e: any) => {
-    if (!this.clipRect) return
-    if (!this.dragListeners) return
+    if (!this.clipRect || !this.dragListeners) return
     this.dragMode = 'resize'
     this.clipRectOrg = { ...this.clipRect }
     this.dragListeners.onDown(e)
   }
 
   private updateClipRect(_rect: Rectangle) {
-    if (!this.$svg) return
-    if (!this.$clipRect) return
-    if (!this.image) return
-    if (!this.clipRect) return
+    if (!this.$svg || !this.$clipRect || !this.image || !this.clipRect) return
 
     const rect = this.overflow
       ? _rect
-      : _adjustInRect(_rect, {
+      : adjustInRect(_rect, {
           x: 0,
           y: 0,
           width: this.image.width,
           height: this.image.height,
         })
 
-    if (_isSameRect(this.clipRect, rect)) return
+    if (isSameRect(this.clipRect, rect)) return
 
     this.clipRect = rect
     const scale = getRate(
@@ -367,12 +362,8 @@ export class ClipFlappers {
   }
 
   private async onCompleteClip() {
-    if (!this.image) return
-    if (!this.clipRect) return
-
-    if (this.onUpdateClip) {
-      this.onUpdateClip(this.base64, this.clipRect, this.clipSize)
-    }
+    if (!this.base64 || !this.clipRect || !this.onUpdateClip) return
+    this.onUpdateClip(this.base64, this.clipRect, this.clipSize)
   }
 
   private onDrag(dragState: DragArgs, scale: number) {
@@ -380,21 +371,23 @@ export class ClipFlappers {
     const clipRectOrg = this.clipRectOrg
     const clipSize = this.clipSize
 
-    if (!dragMode) return
-    if (!clipRectOrg) return
+    if (!dragMode || !clipRectOrg) return
+
+    const dx = (dragState.p.x - dragState.base.x) * scale
+    const dy = (dragState.p.y - dragState.base.y) * scale
 
     if (dragMode === 'move') {
       this.updateClipRect({
         ...clipRectOrg,
-        x: clipRectOrg.x + (dragState.p.x - dragState.base.x) * scale,
-        y: clipRectOrg.y + (dragState.p.y - dragState.base.y) * scale,
+        x: clipRectOrg.x + dx,
+        y: clipRectOrg.y + dy,
       })
     } else if (dragMode === 'resize') {
       const beforeDiagonal = {
-        x: clipRectOrg.width + (dragState.p.x - dragState.base.x) * scale,
-        y: clipRectOrg.height + (dragState.p.y - dragState.base.y) * scale,
+        x: clipRectOrg.width + dx,
+        y: clipRectOrg.height + dy,
       }
-      const afterDiagonal = _getPedal(
+      const afterDiagonal = getPedal(
         beforeDiagonal,
         { x: 0, y: 0 },
         {
@@ -441,77 +434,8 @@ export class ClipFlappers {
   }
 }
 
-function _getPedal(p: Vector, base: Vector, vec: Vector): Vector {
-  const v1 = vec
-  const v2 = { x: p.x - base.x, y: p.y - base.y }
-  const dd = v1.x * v1.x + v1.y * v1.y
-  const dot = v1.x * v2.x + v1.y * v2.y
-  const t = dot / dd
-  return { x: v1.x * t, y: v1.y * t }
-}
-
 function _getDataKey(key: EL_KEYS): { 'data-key': string } {
   return {
     'data-key': `${EL_PREFIX}_${key}`,
-  }
-}
-
-function _isSameRect(a: Rectangle | null, b: Rectangle | null): boolean {
-  return (
-    !!a &&
-    !!b &&
-    a.x === b.x &&
-    a.y === b.y &&
-    a.width === b.width &&
-    a.height === b.height
-  )
-}
-
-function _adjustInRect(
-  target: Rectangle,
-  base: Rectangle,
-  centralize = false
-): Rectangle {
-  const minRate = Math.min(getRate(target, base).minRate, 1)
-  const width = target.width * minRate
-  const height = target.height * minRate
-  return centralize
-    ? {
-        x: base.x + (base.width - width) / 2,
-        y: base.y + (base.height - height) / 2,
-        width,
-        height,
-      }
-    : {
-        x: _getInRange(target.x, base.x, base.x + base.width - width),
-        y: _getInRange(target.y, base.y, base.y + base.height - height),
-        width,
-        height,
-      }
-}
-
-function _getInRange(val: number, min: number, max: number): number {
-  return Math.min(max, Math.max(val, min))
-}
-
-function _bindDrop(
-  $el: HTMLElement | SVGElement,
-  onDrop: (e: DragEvent) => void
-) {
-  $el.ondragover = (e: DragEvent) => {
-    e.preventDefault()
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'copy'
-    }
-    $el.style.opacity = '0.7'
-  }
-  $el.ondragleave = (e: DragEvent) => {
-    e.preventDefault()
-    $el.style.opacity = ''
-  }
-  $el.ondrop = (e: DragEvent) => {
-    e.preventDefault()
-    $el.style.opacity = ''
-    onDrop(e)
   }
 }
