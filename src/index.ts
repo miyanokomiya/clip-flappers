@@ -313,6 +313,8 @@ export class ClipFlappers {
       }),
       this.$clipRect,
     ])
+
+    this.onCompleteClip()
   }
 
   private onUp = () => {
