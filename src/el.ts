@@ -1,4 +1,5 @@
 import { Vector, Size, Rectangle } from 'okanvas'
+import { getRectOutline } from './geo'
 
 const SVG_URL = 'http://www.w3.org/2000/svg'
 
@@ -93,21 +94,9 @@ export function createClipRectElm(
     onStartResize: (e: any) => void
   }
 ): SVGElement {
-  const ip0 = { x: 0, y: 0 }
-  const ip1 = { x: clipRect.width, y: 0 }
-  const ip2 = {
-    x: clipRect.width,
-    y: clipRect.height,
-  }
-  const ip3 = { x: 0, y: clipRect.height }
-
   const lineWidth = 4 * scale
-  const op0 = { x: -lineWidth, y: -lineWidth }
-  const op1 = { x: ip1.x + lineWidth, y: -lineWidth }
-  const op2 = { x: ip2.x + lineWidth, y: ip2.y + lineWidth }
-  const op3 = { x: -lineWidth, y: ip3.y + lineWidth }
-
   const anchorOffset = 6 * scale
+
   const $moveG = createSVGElement(
     'g',
     { transform: `translate(${-anchorOffset}, ${-anchorOffset})` },
@@ -127,13 +116,33 @@ export function createClipRectElm(
     { transform: `translate(${clipRect.x}, ${clipRect.y})` },
     [
       createSVGElement('path', {
-        d: getD([op0, op1, op2, op3, op0, ip0, ip3, ip2, ip1, ip0]),
+        d: getD(getRectOutline(clipRect, lineWidth)),
         fill: 'red',
         stroke: 'none',
       }),
       $moveG,
       $resizeG,
     ]
+  )
+}
+
+export function updateClipRectElm(
+  $el: SVGElement,
+  clipRect: Rectangle,
+  scale: number
+) {
+  const lineWidth = 4 * scale
+  const anchorOffset = 6 * scale
+  const $path = $el.children[0]
+  const $resize = $el.children[2]
+
+  $el.setAttribute('transform', `translate(${clipRect.x}, ${clipRect.y})`)
+  $path.setAttribute('d', getD(getRectOutline(clipRect, lineWidth)))
+  $resize.setAttribute(
+    'transform',
+    `translate(${anchorOffset + clipRect.width}, ${
+      anchorOffset + clipRect.height
+    })`
   )
 }
 

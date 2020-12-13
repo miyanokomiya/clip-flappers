@@ -22,6 +22,7 @@ import {
   setAttribute,
   createHTMLElement,
   createClipRectElm,
+  updateClipRectElm,
   createSvgWrapperElm,
   createSvg,
   createPhotoSVG,
@@ -234,6 +235,7 @@ export class ClipFlappers {
     const $svgWrapper = createSvgWrapperElm(this.viewSize)
     bindDrop($svgWrapper, (e) => this.onInputFile(e))
     this.$svg = createSvg()
+    this.$svg.ontouchstart = (e: TouchEvent) => e.preventDefault()
     hide(this.$svg)
 
     appendChildren(this.$el, [
@@ -356,13 +358,7 @@ export class ClipFlappers {
       this.viewSize,
       getCentralizedViewBox(this.clipSize, this.image)
     ).maxRate
-    const $clipRect = createClipRectElm(this.clipRect, scale, {
-      onStartMove: this.onStartMove,
-      onStartResize: this.onStartResize,
-    })
-    this.$svg.removeChild(this.$clipRect)
-    appendChild(this.$svg, $clipRect)
-    this.$clipRect = $clipRect
+    updateClipRectElm(this.$clipRect, this.clipRect, scale)
   }
 
   private async onCompleteClip() {

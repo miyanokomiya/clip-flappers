@@ -44,3 +44,19 @@ export function adjustInRect(
         height,
       }
 }
+
+export function getRectOutline(rect: Rectangle, lineWidth: number): Vector[] {
+  const ip0 = { x: 0, y: 0 }
+  const ip1 = { x: rect.width, y: 0 }
+  const ip2 = {
+    x: rect.width,
+    y: rect.height,
+  }
+  const ip3 = { x: 0, y: rect.height }
+
+  const op0 = { x: -lineWidth, y: -lineWidth }
+  const op1 = { x: ip1.x + lineWidth, y: -lineWidth }
+  const op2 = { x: ip2.x + lineWidth, y: ip2.y + lineWidth }
+  const op3 = { x: -lineWidth, y: ip3.y + lineWidth }
+  return [op0, op1, op2, op3, op0, ip0, ip3, ip2, ip1, ip0]
+}
