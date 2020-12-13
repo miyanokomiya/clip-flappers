@@ -120,4 +120,30 @@ describe('geo', () => {
       )
     })
   })
+
+  describe('getRectOutline', () => {
+    it.each([
+      [
+        { x: 0, y: 0, width: 10, height: 20 },
+        2,
+        [
+          { x: -2, y: -2 },
+          { x: 12, y: -2 },
+          { x: 12, y: 22 },
+          { x: -2, y: 22 },
+          { x: -2, y: -2 },
+          { x: 0, y: 0 },
+          { x: 0, y: 20 },
+          { x: 10, y: 20 },
+          { x: 10, y: 0 },
+          { x: 0, y: 0 },
+        ],
+      ],
+    ])(
+      'rect: %s, lineWidth: %s => outlined polygon',
+      (rect, lineWidth, expected) => {
+        expect(target.getRectOutline(rect, lineWidth)).toEqual(expected)
+      }
+    )
+  })
 })
